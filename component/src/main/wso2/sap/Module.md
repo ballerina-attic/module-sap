@@ -1,5 +1,3 @@
-# module-sap
-
 ## Package overview
 
 Ballerina SAP Client Endpoint is used to connect Ballerina with SAP. With this SAO Client Endpoint, Ballerina can act as SAP Consumers and SAP Producers.
