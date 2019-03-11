@@ -26,7 +26,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * Handle the transaction ID
+ * <code>CustomServerTIDHandler </code> provides a default implementation of the SAP transaction ID handling
+ *  mechanism.
  */
 public class CustomServerTIDHandler implements JCoServerTIDHandler {
 

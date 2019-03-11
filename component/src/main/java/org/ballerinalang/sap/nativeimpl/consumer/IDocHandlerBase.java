@@ -20,7 +20,7 @@ package org.ballerinalang.sap.nativeimpl.consumer;
 import com.sap.conn.idoc.IDocDocument;
 
 /**
- *
+ * {@code IDocHandlerBase} is the base class for IDoc handler factory.
  */
 public abstract class IDocHandlerBase {
 
