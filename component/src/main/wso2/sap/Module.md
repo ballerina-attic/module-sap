@@ -49,13 +49,9 @@ You can uninstall the module by running uninstall.{sh/bat}.
    
 ## Samples
 
-### SAP Producer
-
-Following example demonstrates a way to publish a idoc to sap.
+### Sample SAP client endpoint 
 
 ```ballerina
-import wso2/sap;
-import ballerina/io;
 
 sap:ProducerConfig producerConfigs = {
     destinationName:"<The SAP gateway name>",
@@ -68,7 +64,13 @@ sap:ProducerConfig producerConfigs = {
 };
 
 sap:Producer sapProducer = new(producerConfigs);
+```
 
+#### Sample SAP client operations
+
+Following example demonstrates a way to publish a bapi to sap.
+
+```ballerina
 string qname = "_-DSD_-ROUTEACCOUNT_CORDER002";
 int idocVersion = The version of IDoc;
 xml idoc = xml `<IDoc Data>`; 
@@ -85,7 +87,7 @@ public function main() {
 }
 ````
 
-Following example demonstrates a way to publish a idoc to sap.
+Following example demonstrates a way to publish a bapi to sap.
 
 ```ballerina
 xml baPiData = xml `<BAPI Data>`;
@@ -99,11 +101,9 @@ public function main() {
 }
 ```
 
-### SAP Consumer
+### Sample SAP listener endpoint
 
 ```ballerina
-import wso2/sap;
-import ballerina/io;
 
 listener sap:Listener consumerEP = new ({
     transportName:"<The protocol name[idoc/bapi]>",
@@ -120,14 +120,17 @@ listener sap:Listener consumerEP = new ({
     sysnr:"<SAP system number, for example, 01>",
     language:"<The logon language>"
     }
-    );
+);
+```
+
+##Sample service for the SAP listener endpoint
+
+```ballerina
 service SapConsumerTest on consumerEP {
-    // The `resource` registered to receive server messages
     resource function onMessage(string idocList) {
         io:println("The message received from SAP instance : " + idocList);
     }
 
-    // The `resource` registered to receive server error messages
     resource function onError(error err) {
         io:println("Error from Connector: " + err.reason());
     }

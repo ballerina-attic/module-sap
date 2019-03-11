@@ -33,8 +33,8 @@ It has full IDoc and experimental BAPI support. It uses the SAP JCO library as t
   
    You can uninstall the module by running uninstall.sh.
 
-Building From the Source
-==================================
+## Building From the Source
+
 If you want to build Ballerina sap endpoint from the source code:
 
 1. Get a clone or download the source from this repository:
@@ -47,13 +47,12 @@ If you want to build Ballerina sap endpoint from the source code:
 5. Extract the distribution created at `/component/target/wso2-sap-<version>.zip`. Run the install.{sh/bat} script to install the module.
 
 You can uninstall the module by running uninstall.{sh/bat}.    
-    
-   
+      
 ## Samples
 
 ### SAP Producer
 
-Following example demonstrates a way to publish a idoc to sap.
+Following example demonstrates a way to publish an idoc to sap.
 
 ```ballerina
 import wso2/sap;
@@ -87,7 +86,7 @@ public function main() {
 }
 ````
 
-Following example demonstrates a way to publish a idoc to sap.
+Following example demonstrates a way to publish a bapi to sap.
 
 ```ballerina
 xml baPiData = xml `<BAPI Data>`;
