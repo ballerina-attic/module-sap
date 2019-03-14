@@ -18,8 +18,6 @@
 
 package org.ballerinalang.sap.nativeimpl.consumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
@@ -37,10 +35,10 @@ import java.util.Map;
 
 import static org.ballerinalang.sap.utils.SapConstants.RESOURCE_ON_ERROR;
 import static org.ballerinalang.sap.utils.SapConstants.RESOURCE_ON_MESSAGE;
-import static org.ballerinalang.sap.utils.SapConstants.SAP_SERVICE;
+import static org.ballerinalang.sap.utils.SapConstants.SAP_RESOURCE;
 
 /**
- * This is used to register a listener to the SAP service.
+ * This is used to register a Listener to the SAP service.
  */
 @BallerinaFunction(
     orgName = SapConstants.ORG_NAME,
@@ -53,42 +51,43 @@ import static org.ballerinalang.sap.utils.SapConstants.SAP_SERVICE;
     )
 )
 public class Register extends BlockingNativeCallableUnit {
-    private static final Log log = LogFactory.getLog(Register.class);
 
+    /**
+     * Add the resources to the Struct
+     * @param context
+     */
     @Override
     public void execute(Context context) {
-
-        Map<String, Resource> sapService = getResourceMap(context);
+        Map<String, Resource> sapResources = getResourceMap(context);
         Struct listenerEndpoint = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
-        listenerEndpoint.addNativeData(SAP_SERVICE, sapService);
-        context.setReturnValues();
+        //Check the resources already add or not to the Struct.
+        if (listenerEndpoint.getNativeData(SAP_RESOURCE) == null) {
+            listenerEndpoint.addNativeData(SAP_RESOURCE, sapResources);
+            context.setReturnValues();
+        } else {
+            throw new BallerinaException("Stop the running listener.");
+        }
     }
 
+    /**
+     * Validate the resources and set those into the map. .
+     * @param context The context
+     * @return return the resource map
+     */
     private Map<String, Resource> getResourceMap(Context context) {
-
         Service service = BLangConnectorSPIUtil.getServiceRegistered(context);
-        return getResourceRegistry(service);
-    }
-
-    private Map<String, Resource> getResourceRegistry(Service service) {
-
         Map<String, Resource> registry = new HashMap<>(2);
-        int resourceCount = 0;
         for (Resource resource : service.getResources()) {
             switch (resource.getName()) {
                 case RESOURCE_ON_ERROR:
-                    resourceCount++;
                     registry.put(RESOURCE_ON_ERROR, resource);
                     break;
                 case RESOURCE_ON_MESSAGE:
-                    resourceCount++;
                     registry.put(RESOURCE_ON_MESSAGE, resource);
                     break;
                 default:
-                    throw new BallerinaException("");
-            }
-            if (resourceCount == 2) {
-                break;
+                    throw new BallerinaException("One of these name [" + RESOURCE_ON_ERROR + ", "
+                            + RESOURCE_ON_MESSAGE + "] should be used to register the resource in the SAP service");
             }
         }
         return registry;

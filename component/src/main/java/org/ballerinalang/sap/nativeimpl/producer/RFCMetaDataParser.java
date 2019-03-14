@@ -36,10 +36,10 @@ import static org.ballerinalang.sap.utils.SapConstants.STRUCTURE;
 import static org.ballerinalang.sap.utils.SapConstants.TABLE;
 import static org.ballerinalang.sap.utils.SapConstants.TABLES;
 
-/** This will contains the required methods that can be use to parser a
+/** This contains the required methods that can be used to parse a
  * meta data description of a BAPI/RFC call.
- * So the BNF grammar for the meta data would looks like :
- *  bapi Function   -> import | tables | both
+ * Thus, the BNF grammar of the metadata would look like below:
+ *  BAPI Function   -> import | tables | both
  *  import    -> structure | field | both
  *  structure -> 1 or more fields
  *  tables    -> 1 or more table
@@ -53,12 +53,11 @@ public class RFCMetaDataParser {
     private static Log log = LogFactory.getLog(RFCMetaDataParser.class);
 
     /**
-     * process the document
-     * @param document the document node
-     * @param function the RFC function to execute
+     * Process the document.
+     * @param document The document node
+     * @param function The RFC function to be executed
      */
     static void processMetaDataDocument(OMElement document, JCoFunction function) {
-
         Iterator itr = document.getChildElements();
         while (itr.hasNext()) {
             OMElement childElement = (OMElement) itr.next();
@@ -67,12 +66,11 @@ public class RFCMetaDataParser {
     }
 
     /**
-     * Process every element in the document
-     * @param element the OMElement
-     * @param function the RFC function to execute
+     * Process every element in the document.
+     * @param element The OMElement
+     * @param function The RFC function to be executed.
      */
     private static void processElement(OMElement element, JCoFunction function) {
-
         String qname = element.getQName().toString();
         if (qname != null) {
             if (qname.equals(IMPORT)) {
@@ -87,12 +85,11 @@ public class RFCMetaDataParser {
     }
 
     /**
-     * Process the import function
-     * @param element the OMElement
-     * @param function the RFC function to execute
+     * Process the import function.
+     * @param element The OMElement
+     * @param function The RFC function to be executed
      */
     private static void processImport(OMElement element, JCoFunction function) {
-
         Iterator itr = element.getChildElements();
         while (itr.hasNext()) {
             OMElement childElement = (OMElement) itr.next();
@@ -108,19 +105,17 @@ public class RFCMetaDataParser {
                 default:
                     log.warn("Unknown meta data type tag :" + qname + " detected. " +
                             "This meta data element will be discarded!");
-                    break;
             }
         }
     }
 
     /**
-     * Process the Structure under the import function
-     * @param element the OMElement
-     * @param function the RFC function to execute
-     * @param strcutName the structure name
+     * Process the structure under the import function.
+     * @param element The OMElement
+     * @param function The RFC function to be executed
+     * @param strcutName Name of the structure
      */
     private static void processStructure(OMElement element, JCoFunction function, String strcutName) {
-
         if (strcutName == null) {
             throw new BallerinaException("A structure should have a name!");
         }
@@ -157,13 +152,12 @@ public class RFCMetaDataParser {
     }
 
     /**
-     * Process the field
-     * @param element the OMElement
-     * @param function the RFC function to execute
-     * @param fieldName the field name
+     * Process the field.
+     * @param element The OMElement
+     * @param function The RFC function to execute
+     * @param fieldName The field name
      */
     private static void processField(OMElement element, JCoFunction function, String fieldName) {
-
         if (fieldName == null) {
             throw new BallerinaException("A field should have a name!");
         }
@@ -174,12 +168,11 @@ public class RFCMetaDataParser {
     }
 
     /**
-     * Process tables
-     * @param element the OMElement
-     * @param function the RFC function to execute
+     * Process the tables.
+     * @param element The OMElement
+     * @param function The RFC function to be execute
      */
     private static void processTables(OMElement element, JCoFunction function) {
-
         Iterator itr = element.getChildElements();
         while (itr.hasNext()) {
             OMElement childElement = (OMElement) itr.next();
@@ -196,11 +189,10 @@ public class RFCMetaDataParser {
 
     /**
      * Process the table
-     * @param element the OMElement
-     * @param function the RFC function to execute
+     * @param element The OMElement
+     * @param function The RFC function to execute
      */
     private static void processTable(OMElement element, JCoFunction function, String tableName) {
-
         JCoTable inputTable = function.getTableParameterList().getTable(tableName);
         if (inputTable == null) {
             throw new BallerinaException("Input table :" + tableName + " does not exist");
@@ -220,13 +212,12 @@ public class RFCMetaDataParser {
     }
 
     /**
-     * Process the table
-     * @param element the OMElement
-     * @param table the JCo table
-     * @param id the row id
+     * Process the table.
+     * @param element The OMElement
+     * @param table The RFC function to be executed
+     * @param id The ID of the row
      */
     private static void processRow(OMElement element, JCoTable table, String id) {
-
         int rowId;
         try {
             rowId = Integer.parseInt(id);
@@ -255,12 +246,11 @@ public class RFCMetaDataParser {
     }
 
     /**
-     * Process the Field
-     * @param element the OMElement
-     * @param table the RFC function to execute
+     * Process the field.
+     * @param element The OMElement
+     * @param table The RFC function to be executed
      */
     private static void processField(OMElement element, JCoTable table) {
-
         String fieldName = element.getAttributeValue(SapConstants.NAME_Q);
         String fieldValue = element.getText();
         if (fieldName == null) {

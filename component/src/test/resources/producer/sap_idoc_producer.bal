@@ -17,23 +17,22 @@
 import wso2/sap;
 
 sap:ProducerConfig producerConfigs = {
-    destinationName:"<The SAP gateway name>",
-    sapClient:"<SAP client, for example, 001>",
-    userName:"<The user logon>",
-    password:"<The logon password>",
-    asHost:"<The R/3 application server>",
-    sysnr:"<SAP system number, for example, 01>",
-    language:"<The logon language>"
+    destinationName:"The name of the SAP gateway",
+    logonClient:"The SAP client ID (usually a number) used to connect to the SAP system",
+    userName:"Username of an authorized SAP user",
+    password:"Password credential of an authorized SAP user",
+    asHost:"The SAP endpoint",
+    sysnr:"System number used to connect to the SAP system",
+    language:"The language to use for the SAP connection. For example, en for English"
 };
 
-string qname = "_-DSD_-ROUTEACCOUNT_CORDER002";
 int idocVersion = 3;
-xml idoc = xml `<{{qname}}>
-        <IDOC BEGIN="1">
-            <EDI_DC40 SEGMENT="1">
-            </EDI_DC40>
-        </IDOC>
-    </{{qname}}>`;
+xml idoc = xml `<_-DSD_-ROUTEACCOUNT_CORDER002>
+                    <IDOC BEGIN="1">
+                        <EDI_DC40 SEGMENT="1">
+                        </EDI_DC40>
+                    </IDOC>
+                 </_-DSD_-ROUTEACCOUNT_CORDER002>`;
 function funcSapIDocProducer() returns string|error {
     sap:Producer sapProducer = new(producerConfigs);
     return sapProducer->sendIdocMessage(idocVersion, idoc);

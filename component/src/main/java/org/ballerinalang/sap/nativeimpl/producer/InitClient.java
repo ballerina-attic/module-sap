@@ -23,8 +23,6 @@ import com.sap.conn.jco.JCoDestinationManager;
 import com.sap.conn.jco.JCoException;
 import com.sap.conn.jco.ext.DestinationDataProvider;
 import com.sap.conn.jco.ext.Environment;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
@@ -36,7 +34,6 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.sap.nativeimpl.consumer.CustomDestinationDataProvider;
 import org.ballerinalang.sap.utils.SapConstants;
-import org.wso2.carbon.kernel.utils.StringUtils;
 
 import java.util.Properties;
 import static org.ballerinalang.sap.utils.SapConstants.FULL_PACKAGE_NAME;
@@ -47,7 +44,7 @@ import static org.ballerinalang.sap.utils.SapConstants.SAP_NATIVE_PACKAGE;
 import static org.ballerinalang.sap.utils.SapUtils.createError;
 
 /**
- * Native action initializes a producer instance for connector.
+ * Native action initializes a producer instance for the connector.
  */
 @BallerinaFunction(
     orgName = ORG_NAME,
@@ -57,12 +54,10 @@ import static org.ballerinalang.sap.utils.SapUtils.createError;
             structPackage = SAP_NATIVE_PACKAGE)
 )
 public class InitClient extends BlockingNativeCallableUnit {
-        private static Log log = LogFactory.getLog(InitClient.class);
-    private static CustomDestinationDataProvider destinationDataProvider;
-
 
     @Override
     public void execute(Context context) {
+        CustomDestinationDataProvider destinationDataProvider;
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
         BMap<String, BValue> producerConf = (BMap<String, BValue>) context.getRefArgument(1);
         Properties connectProperties = new Properties();
@@ -78,104 +73,123 @@ public class InitClient extends BlockingNativeCallableUnit {
                 String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_ASHOST)));
         connectProperties.setProperty(DestinationDataProvider.JCO_SYSNR,
                 String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SYSNR)));
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties
-                .JCO_EXTID_DATA)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_EXTID_DATA))) != null && !String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_EXTID_DATA)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_EXTID_DATA,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_EXTID_DATA)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties
-                .JCO_EXTID_TYPE)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_EXTID_TYPE))) != null && !String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_EXTID_TYPE)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_EXTID_TYPE,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_EXTID_TYPE)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SAPROUTER)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_SAPROUTER))) != null && !String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_SAPROUTER)).equals("")) {
             connectProperties.setProperty(SapConstants.Clientproperties.JCO_SAPROUTER,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SAPROUTER)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GWHOST)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_GWHOST))) != null && !String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_GWHOST)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_GWHOST,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GWHOST)));
         }
-        if (!StringUtils.isNullOrEmpty(producerConf.get(SapConstants.Clientproperties.JCO_MSHOST).stringValue())) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_MSHOST))) != null && !String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_MSHOST)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_MSHOST,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_MSHOST)));
         }
-        if (!StringUtils.isNullOrEmpty(producerConf.get(SapConstants.Clientproperties.JCO_ALIAS_USER).stringValue())) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_ALIAS_USER))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_ALIAS_USER)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_ALIAS_USER,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_ALIAS_USER)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_MSSERV)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_MSSERV))) != null &&
+                !String.valueOf(producerConf.get(SapConstants.Clientproperties
+                .JCO_MSSERV)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_MSSERV,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_MSSERV)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GWSERV)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GWSERV))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GWSERV)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_GWSERV,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GWSERV)));
         }
-        if (!StringUtils.isNullOrEmpty(producerConf.get(SapConstants.Clientproperties.JCO_R3NAME).stringValue())) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_R3NAME))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_R3NAME)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_R3NAME,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_R3NAME)));
         }
-        if (!StringUtils.isNullOrEmpty(producerConf.get(SapConstants.Clientproperties.JCO_GROUP).stringValue())) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GROUP))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GROUP)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_GROUP,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GROUP)));
         }
         connectProperties.setProperty(DestinationDataProvider.JCO_TRACE,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TRACE)));
-        connectProperties.setProperty(DestinationDataProvider.JCO_USE_SAPGUI, String.valueOf(producerConf.get(
-                SapConstants.Clientproperties.JCO_USE_SAPGUI)));
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_CODEPAGE)))) {
+        connectProperties.setProperty(DestinationDataProvider.JCO_USE_SAPGUI,
+                String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_USE_SAPGUI)));
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_CODEPAGE))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_CODEPAGE)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_CODEPAGE,
                     String.valueOf(Integer.parseInt(String.valueOf(producerConf.get(SapConstants.
                             Clientproperties.JCO_CODEPAGE)))));
         }
         connectProperties.setProperty(DestinationDataProvider.JCO_GETSSO2,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_GETSSO2)));
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.
-                JCO_SNC_PARTNERNAME)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_PARTNERNAME))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_PARTNERNAME)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_SNC_PARTNERNAME,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_PARTNERNAME)));
         }
         connectProperties.setProperty(DestinationDataProvider.JCO_SNC_MODE,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_MODE)));
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_QOP)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_QOP))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_QOP)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_SNC_QOP,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_QOP)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties
-                .JCO_SNC_MYNAME)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_MYNAME))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_MYNAME)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_SNC_MYNAME,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_MYNAME)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties
-                .JCO_SNC_LIBRARY)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_LIBRARY))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_LIBRARY)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_SNC_LIBRARY,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_SNC_LIBRARY)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TPNAME)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TPNAME))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TPNAME)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_TPNAME,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TPNAME)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TPHOST)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TPHOST))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TPHOST)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_TPHOST,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TPHOST)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TYPE)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TYPE))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TYPE)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_TYPE,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_TYPE)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_DEST)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_DEST))) != null
+                    && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_DEST)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_DEST,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_DEST)));
         }
-
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties
-                .JCO_MYSAPSSO2)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_MYSAPSSO2))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_MYSAPSSO2)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_MYSAPSSO2,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_MYSAPSSO2)));
         }
-        if (!StringUtils.isNullOrEmpty(String.valueOf(producerConf.get(SapConstants.Clientproperties
-                .JCO_X509CERT)))) {
+        if ((String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_X509CERT))) != null
+                && !String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_X509CERT)).equals("")) {
             connectProperties.setProperty(DestinationDataProvider.JCO_X509CERT,
                     String.valueOf(producerConf.get(SapConstants.Clientproperties.JCO_X509CERT)));
         }
@@ -190,6 +204,8 @@ public class InitClient extends BlockingNativeCallableUnit {
         } catch (JCoException e) {
             context.setReturnValues(createError(context, "Destination named '" + destinationName
                     + "' is not registered with JCo." + e.toString()));
+            createError(context, "Destination named '" + destinationName
+                    + "' is not registered with JCo." + e.toString());
         }
         BMap producerMap = (BMap) producerConnector.get("producerHolder");
         BMap<String, BValue> producerStruct = BLangConnectorSPIUtil

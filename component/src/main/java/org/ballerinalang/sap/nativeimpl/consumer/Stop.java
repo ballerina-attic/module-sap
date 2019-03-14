@@ -24,10 +24,9 @@ import com.sap.conn.jco.server.JCoServerState;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.CallableUnitCallback;
+import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.connector.api.Struct;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -58,54 +57,52 @@ import static org.ballerinalang.sap.utils.SapConstants.serverStopTimeout;
     ),
     isPublic = true
 )
-public class Stop implements NativeCallableUnit {
+public class Stop extends BlockingNativeCallableUnit {
+
     private static final Log log = LogFactory.getLog(Stop.class);
+
     @Override
-    public void execute(Context context, CallableUnitCallback callableUnitCallback) {
+    public void execute(Context context) {
         Struct consumerStruct = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
         String transportName = (String) consumerStruct.getNativeData(CONSUMER_TRANSPORT_NAME);
         String serverName = (String) consumerStruct.getNativeData(CONSUMER_SERVER_STRUCT_NAME);
-
         if (transportName.equalsIgnoreCase(SAP_IDOC_PROTOCOL_NAME)) {
+            //Get the running IDoc server
             JCoIDocServer jcoIDocServer = (JCoIDocServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
-
             if (log.isDebugEnabled()) {
                 log.debug("Stopping the JCo endpoint : " + serverName);
             }
             jcoIDocServer.stop();
             jcoIDocServer.release();
-
             if (waitForServerStop(jcoIDocServer)) {
                 log.warn("JCo server : " + serverName + " is taking an unusually long time to stop.");
             } else {
                 log.info("JCo server : " + serverName + " stopped");
             }
         } else if (transportName.equalsIgnoreCase(SAP_BAPI_PROTOCOL_NAME)) {
+            //Get the running JCo server
             JCoServer jcoServer = (JCoServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
-
             if (log.isDebugEnabled()) {
                 log.debug("Stopping the JCo endpoint : " + serverName);
             }
             jcoServer.stop();
             jcoServer.release();
-
             if (waitForServerStop(jcoServer)) {
                 log.warn("JCo server : " + serverName + " is taking an unusually long time to stop.");
             } else {
                 log.info("JCo server : " + serverName + " stopped");
             }
         } else {
-            throw new BallerinaException("Protocol name: " + transportName + " is not " +
-                    "supported.");
+            throw new BallerinaException("Protocol name: " + transportName + " is not supported.");
         }
         context.setReturnValues();
     }
 
     /**
-     * Block until server state is stopped or maximum timeout reached.
+     * Block until the server state is stopped or until the maximum timeout time is reached.
      *
-     * @param jcoServer jco server for which we wait to be stopped.
-     * @return true if the server is stopped before the timeout is exceeded
+     * @param jcoServer The jcoServer The JCO server, which will wait to be stopped
+     * @return true if the server is stopped before the timeout time is exceeded.
      */
     private boolean waitForServerStop(JCoServer jcoServer) {
         long timeStamp = System.currentTimeMillis();
@@ -117,14 +114,9 @@ public class Stop implements NativeCallableUnit {
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
-                //do nothing, just continue the loop
+                //Continue the loop.
             }
         }
         return jcoServer.getState() != JCoServerState.STOPPED;
-    }
-
-    @Override
-    public boolean isBlocking() {
-        return true;
     }
 }

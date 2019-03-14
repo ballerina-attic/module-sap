@@ -16,7 +16,7 @@
 // under the License.
 //
 
-//string constants
+//String constants
 public const TRANSPORT_IDOC = "idoc";
 public const TRANSPORT_BAPI = "bapi";
 public type Transport TRANSPORT_IDOC|TRANSPORT_BAPI;

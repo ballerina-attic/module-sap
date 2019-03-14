@@ -17,16 +17,17 @@
 import wso2/sap;
 
 sap:ProducerConfig producerConfigs = {
-    destinationName:"<The SAP gateway name>",
-    sapClient:"<SAP client, for example, 001>",
-    userName:"<The user logon>",
-    password:"<The logon password>",
-    asHost:"<The R/3 application server>",
-    sysnr:"<SAP system number, for example, 01>",
-    language:"<The logon language>"
+    destinationName:"The name of the SAP gateway",
+    logonClient:"The SAP client ID (usually a number) used to connect to the SAP system",
+    userName:"Username of an authorized SAP user",
+    password:"Password credential of an authorized SAP user",
+    asHost:"The SAP endpoint",
+    sysnr:"System number used to connect to the SAP system",
+    language:"The language to use for the SAP connection. For example, en for English"
 };
-xml bapiData = xml `<BAPI Data>`;
+
+xml bapi = xml `<BAPI_DOCUMENT_GETLIST></BAPI_DOCUMENT_GETLIST>`;
 function funcSapBAPIProducer() returns string|error {
     sap:Producer sapProducer = new(producerConfigs);
-    return sapProducer->sendBapiMessage(bapiData, false, false);
+    return sapProducer->sendBapiMessage(bapi, false, false);
 }

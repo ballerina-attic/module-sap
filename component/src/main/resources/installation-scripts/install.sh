@@ -14,6 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+# Get the ballerina home path
 read -p "Please enter Ballerina home: "  ballerina_home
 
 if [ ! -e "$ballerina_home/bin/ballerina" ]

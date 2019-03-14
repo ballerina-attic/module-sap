@@ -35,7 +35,6 @@ import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.sap.utils.SapConstants;
-import org.wso2.carbon.kernel.utils.StringUtils;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -48,7 +47,7 @@ import static org.ballerinalang.sap.utils.SapConstants.SAP_NATIVE_PACKAGE;
 import static org.ballerinalang.sap.utils.SapUtils.createError;
 
 /**
- * {@code Send} send the BAPI message to the  SAP Instance.
+ * {@code Send} Send the BAPI message to the  SAP instance.
  */
 @BallerinaFunction(
     orgName = ORG_NAME,
@@ -58,6 +57,7 @@ import static org.ballerinalang.sap.utils.SapUtils.createError;
             structPackage = SAP_NATIVE_PACKAGE)
 )
 public class SendBAPIMessage extends BlockingNativeCallableUnit {
+
     private static Log log = LogFactory.getLog(SendBAPIMessage.class);
 
     @Override
@@ -72,48 +72,55 @@ public class SendBAPIMessage extends BlockingNativeCallableUnit {
         String productName = String.valueOf(context.getRefArgument(3));
         String ccmsInterface = String.valueOf(context.getRefArgument(4));
         String cccmsInterfaceVersion = String.valueOf(context.getRefArgument(4));
-
+        String functionName = null;
         JCoDestination destination = (JCoDestination) producerStruct.getNativeData(NATIVE_PRODUCER);
-        String response = null;
+        String response;
         try {
             OMElement omData = AXIOMUtil.stringToOM(content);
-            String functionName = omData.getQName().toString();
+            functionName = omData.getQName().toString();
             if (doLogon) {
-                if (!(StringUtils.isNullOrEmpty(productManufacturer) || StringUtils.isNullOrEmpty(productName) ||
-                        StringUtils.isNullOrEmpty(ccmsInterface))) {
+                if ((String.valueOf(productManufacturer) == null && String.valueOf(productManufacturer).equals("")) ||
+                        (String.valueOf(productName) == null && String.valueOf(productName).equals("")) ||
+                        (String.valueOf(ccmsInterface) == null && String.valueOf(ccmsInterface).equals(""))) {
                     log.error("The logon's parameter/s has/have null value.");
                 }
-                log.info("Begin Transaction");
-                JCoContext.begin(destination);
                 TransactionHandler.logon(destination, productManufacturer, productName, ccmsInterface,
                         cccmsInterfaceVersion, context);
             }
             if (doTransaction) {
                 log.info("Begin transaction.");
                 JCoContext.begin(destination);
+                // Get the BAPI/RFC function from the SAP repository
                 JCoFunction function = TransactionHandler.getRFCfunction(destination, functionName, context);
+                // Process the BAPI function
                 processMetaDataDocument(omData, function);
+                // Evaluate the BAPI/RFC function in a remote R/* system
                 response = TransactionHandler.evaluateRFCfunction(function, destination, context);
                 JCoFunction commitFunction = TransactionHandler.getRFCfunction(destination,
                         SapConstants.BAPI_COMMIT_NAME, context);
                 TransactionHandler.evaluateRFCfunction(commitFunction, destination, context);
                 context.setReturnValues(new BString(response));
-                log.info("Commit transaction.");
+                log.info("Commit transaction for function:" + functionName);
             } else {
+                // Get the BAPI/RFC function from the SAP repository
                 JCoFunction function = TransactionHandler.getRFCfunction(destination, functionName, context);
+                // Process the BAPI function
                 RFCMetaDataParser.processMetaDataDocument(omData, function);
+                // Evaluate the BAPI/RFC function in a remote R/* system
                 response = TransactionHandler.evaluateRFCfunction(function, destination, context);
                 context.setReturnValues(new BString(response));
             }
         } catch (XMLStreamException e) {
             context.setReturnValues(createError(context, "Error occurred when converting the XML data" +
                     " in as string to XML: " + e.toString()));
+            createError(context, "Error occurred when converting the XML data" +
+                    " in as string to XML: " + e.toString());
         } catch (Exception e) {
             if (doTransaction) {
                 JCoFunction rollbackFunction = TransactionHandler.getRFCfunction(destination,
                         SapConstants.ROLLBACK_BAPI_NAME, context);
                 TransactionHandler.evaluateRFCfunction(rollbackFunction, destination, context);
-                log.info("Rollback transaction.");
+                log.info("Rollback transaction for function:" + functionName);
             }
         } finally {
             if (doTransaction || doLogon) {
@@ -122,8 +129,10 @@ public class SendBAPIMessage extends BlockingNativeCallableUnit {
                 } catch (JCoException e) {
                     context.setReturnValues(createError(context, "Error occurred when end the " +
                             "Jco context."));
+                    createError(context, "Error occurred when end the " +
+                            "Jco context.");
                 }
-                log.info("End transaction.");
+                log.info("End the transaction for function: " + functionName);
             }
         }
     }

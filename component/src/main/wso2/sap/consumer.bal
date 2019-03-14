@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Represents a SAP service listener .
+# Represents a SAP service Listener.
 public type Listener object {
     *AbstractListener;
 
@@ -51,22 +51,22 @@ public type Listener object {
     extern function init(ConsumerServerConfig servConfig, ConsumerDestinationConfig destConfig) returns error?;
 };
 
-# The server properities configuration for Sap.
+# The server properties configuration of SAP.
 #
-# + transportName - The protocol name
-# + serverName - Name of the server configuration.This needs to be the same name provided in the SAP configuration.
+# + transportName - Name of the protocol
+# + serverName - Name of the server configuration. This needs to be the same name that is provided in the SAP configuration.
 # + gwhost - Gateway host on which the server should be registered
 # + progId - The program ID with which the registration is done
-# + gwServ - Gateway service, i.e. the port on which a registration can be done
-# + connectionCount - The number of connections that should be registered at the gateway
-# + trace - Enable/disable RFC trace (1 or 0)
-# + repositoryDestination - Name of the .dest file. For example, if the .dest file is SAPSYS01.dest ,
-#                            set this to SAPSYS01 .
-# + unicode - Determines whether or not you connect in unicodemode (true, false)
-# + sncMyName - SNC name of your server. Overrides the default SNC name. Typically something like
+# + gwServ - Gateway service( i.e., the port on which a registration can be done)
+# + connectionCount - The number of connections that should be registered with the gateway. default: 1
+# + trace - Enable/disable the RFC trace (1 or 0 [default])
+# + repositoryDestination - Name of the .dest file. For example, if the .dest file is SAPSYS01.dest,
+#                            set this to SAPSYS01.
+# + unicode - Determines whether you connect in Unicode mode or not (true, false)
+# + sncMyName - SNC name of your server. This overrides the default SNC name. Typically, something like
 #   p:CN=JCoServer, O=ACompany, C=EN
 # + sncqop - SNC level of security, 1 to 9
-# + sncLib - Path to library which provides SNC service.
+# + sncLib - Path to the library, which provides the SNC service.
 public type ConsumerServerConfig record {
     Transport transportName = "idoc";
     string serverName = "";
@@ -82,39 +82,39 @@ public type ConsumerServerConfig record {
     string? sncLib = "";
 };
 
-# The desination properities configuration for Sap.
+#The destination properties configuration of SAP.
 #
 # + sapClient - SAP Client
-# + userName - Logon user
-# + password - Logon password
-# + language - Logon language
+# + userName - Username to log in to SAP
+# + password - Password to log in to SAP
+# + language - Language preferred by the user who is logged in
 # + sysnr - SAP system number
-# + aliasUser - Logon user alias
-# + mySapsso2 - Use the specified SAP cookie version 2 as the logon ticket
-# + x509Cert - X509-certificate as logon ticket
-# + extiddata - External identification user logon data
-# + extidtype - Type of the external identification user logon data
-# + sapRouter - SAP router string to use for a system protected by a firewall
+# + aliasUser - Alias of the user who is logged in.
+# + mySapsso2 - The SAP cookie version 2 of the login ticket that should be used
+# + x509Cert - The X509-certificate of the login ticket
+# + extiddata - External identification login data of the user
+# + extidtype - Type of the external identification login data of the user
+# + sapRouter - SAP router String to use for a system that is protected by a firewall
 # + gwHost - Gateway host
 # + asHost - SAP application server
 # + msHost - SAP message server
-# + msServ - SAP message server port to use instead of the default sapms sysid
+# + msServ - SAP message server port to use instead of the default SAP message server system ID
 # + gwServ - Gateway service
 # + r3Name - System ID of the SAP system
 # + serverGroup - The group of application servers
-# + trace - Enable or disable RFC trace (true or false)
 # + useSapGui - Start a SAP GUI and associate with the connection. (0 - do not start [default], 1 start GUI,
 #   2 start GUI and hide if not used)
-# + codePage  - Initial logon codepage in SAP notatio
-# + getsso2  - Get/don't get an SSO ticket after logon (true or false)
-# + sncPartnerName - SNC partner, e.g. p:CN=R3, O=XYZ-INC, C=EN
-# + sncMode - Secure network connection (SNC) mode, false (off) or true (on)
-# + sncqop - SNC level of security (1-9)
+# + codePage  - Initial login codepage in SAP notation
+# + getsso2  - Whether to get an SSO ticket after logging in or not (1 or 0 [default])
+# + sncPartnerName - SNC partner. E.g., p:CN=R3, O=XYZ-INC, C=EN
+# + sncMode - Whether the Secure Network Connection (SNC) mode in on (1) or off (0 [default])
+# + sncqop - SNC level of security (1-9, default:8)
 # + sncmyName - SNC name. Overrides default SNC partner
-# + sncLib - Path to library which provides SNC service
-# + tpName - The program ID of external server program
-# + tpHost - The host of external server program
-# + hostType - Type of remote host (3=R/3, E=External)
+# + sncLib - Path to the library which provides the SNC service
+#   Valid values are true (yes, default) and false (no)
+# + tpName - The program ID of the external server program
+# + tpHost - The host of the external server program
+# + hostType - Type of the remote host (3=R/3, E=External)
 # + dest - The R/2 destination
 public type ConsumerDestinationConfig record {
     string sapClient = "";
@@ -135,7 +135,6 @@ public type ConsumerDestinationConfig record {
     string? gwServ = "";
     string? r3Name = "";
     string? serverGroup = "";
-    Value trace = 1;
     Value useSapGui = 0;
     string? codePage = "";
     Value getsso2 = 0;

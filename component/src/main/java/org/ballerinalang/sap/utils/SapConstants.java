@@ -21,7 +21,7 @@ package org.ballerinalang.sap.utils;
 import javax.xml.namespace.QName;
 
 /**
- * Constants related for SAP.
+ * Constants related to SAP.
  */
 public class SapConstants {
 
@@ -39,12 +39,14 @@ public class SapConstants {
 
     public static final String RESOURCE_ON_MESSAGE = "onMessage";
     public static final String RESOURCE_ON_ERROR = "onError";
-    public static final String SAP_SERVICE = "sapService";
+    public static final String SAP_RESOURCE = "sapResource";
 
     public static final String CONSUMER_STRUCT_NAME = "Listener";
     public static final String CONSUMER_TRANSPORT_NAME = "transportName";
     public static final String CONSUMER_SERVER_CONNECTOR_NAME = "serverConnector";
     public static final String CONSUMER_SERVER_STRUCT_NAME = "serverName";
+    public static final String DESTINATION_CONFIG = "destinationConfig";
+    public static final String SERVER_CONFIG = "serverConfig";
     public static final String SAP_MESSAGE_OBJECT = "sap_message_object";
 
     public static final String PRODUCER_STRUCT_NAME = "Producer";
@@ -59,12 +61,12 @@ public class SapConstants {
     public static final String SAP_ERROR_CODE = "error";
 
     /**
-     * name in the rfc configuration
+     * Name of the RFC configuration.
      */
     public static final QName NAME_Q = new QName("name");
 
     /**
-     * id in rfc configuation
+     *ID of the RFC configuration.
      */
     public static final QName ID_Q = new QName("id");
 
@@ -88,7 +90,7 @@ public class SapConstants {
     public static final String TABLES = "tables";
 
     /**
-     * Max timeout to allow server to stop
+     * Max timeout to allow the server to stop.
      */
     public static int serverStopTimeout = 30000;
 

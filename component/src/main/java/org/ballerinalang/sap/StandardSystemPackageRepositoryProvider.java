@@ -32,5 +32,4 @@ public class StandardSystemPackageRepositoryProvider implements SystemPackageRep
     public Repo loadRepository() {
         return new JarRepo(SystemPackageRepositoryProvider.getClassUri(this));
     }
-
 }

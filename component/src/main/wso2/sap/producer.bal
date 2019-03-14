@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Represent a Sap producer endpoint.
+# Represent a SAP producer endpoint.
 #
-# + producerHolder - List of producers available.
+# + producerHolder - List of available producers.
 # + producerConfig - Used to store configurations related to a SAP connection.
 public type Producer client object {
 
@@ -33,56 +33,56 @@ public type Producer client object {
     # Initialize the producer endpoint.
     #
     # + config - Configurations related to the endpoint.
-    # + return - Error if initialization failed, none otherwise.
+    # + return - Return an error if initialization failed.
     extern function init(ProducerConfig config) returns error?;
 
     public map<any> producerHolder = {};
 
     # Pushes data into the SAP instance by sending IDocs over RFC.
     #
-    # + idocVersion - The version of the idoc
+    # + idocVersion - The version of the IDoc
     # + content - The message that used for transmission
-    # + return - Returns error if send action fails to send IDoc, none otherwise.
+    # + return - Returns an error if sending the IDoc fails.
     public remote extern function sendIdocMessage(int idocVersion, xml content) returns string|error;
 
     # Pushes data into the SAP instance by sending IDocs over RFC.
     #
-    # + content - The message that used for transmission
-    # + doTransaction - Do you call the BAPI_TRANSACTION_COMMIT after the LUW are completed successfully
-    # + doLogon - Do you log onto one of the SAP CCMS system administration interfaces to retrieve
+    # + content - The message that is used for transmission
+    # + doTransaction - Whether the BAPI_TRANSACTION_COMMIT is called after the LUW is completed successfully
+    # + doLogon - Whether you log in to one of the SAP CCMS system-administration interfaces to retrieve
     #   the SAP function module
-    # + productManufacturer - The manufacturer of the product that wants to log onto
-    #   a CCMS system administration interface.If you log onto one of the SAP CCMS system administration interfaces,
+    # + productManufacturer - The manufacturer of the product to whose CCMS system administration interface you want to log in to
+    #   a CCMS system administration interface. If you log in to one of the SAP CCMS system-administration interfaces,
     #   it is mandatory
-    # + productName - The name of the product that is to log onto a CCMS system administration interface
-    #   If you log onto one of the SAP CCMS system administration interfaces,
+    # + productName - The name of the product to whose CCMS system-administration interface you want to log in to
+    #   If you log in to one of the SAP CCMS system-administration interfaces,
     #   it is mandatory.
     # + interface - The identification code of the interface that is to be used (such as XBR (DB backup),
-    #   XBP (Background processing),XMB (Basic functions),XOM (Output management),XDB (DB administration))
-    #   If you log onto one of the SAP CCMS system administration interfaces,
+    #   XBP (Background processing), XMB (Basic functions), XOM (Output management), and XDB (DB administration))
+    #   If you log in to one of the SAP CCMS system-administration interfaces,
     #   it is mandatory.
-    # + CCMSInterfaceVersion - The version of the CCMS system administration interface that expects
+    # + CCMSInterfaceVersion - The version of the CCMS system-administration interface that expects
     #   the external product from the R/3 System
-    # + return - Returns error if send action fails to execute bapi, none otherwise.
+    # + return - Returns an error if sending the BAPI fails.
     public remote extern function sendBapiMessage(xml content, boolean doTransaction, boolean doLogon,
     string? productManufacturer = "", string? productName = "", string? interface = "",
     string? CCMSInterfaceVersion = "") returns string|error;
 };
 
-# The Client endpoint configuration for Sap.
+# The Client endpoint configuration of SAP.
 #
-# + destinationName - The SAP gateway name
+# + destinationName - Name of the SAP gateway
 # + sapClient - SAP Client
-# + userName - Logon user
-# + password - Logon password
-# + language - Logon language
+# + userName - Username to log in to SAP
+# + password - Password to log in to SAP
+# + language - Language preferred by the user who is logged in
 # + sysnr - SAP system number
-# + aliasUser - Logon user alias
-# + mySapsso2 - Use the specified SAP cookie version 2 as the logon ticket
-# + x509Cert - X509-certificate as logon ticket
-# + extiddata - External identification user logon data
-# + extidtype - Type of the external identification user logon data
-# + sapRouter - SAP router string to use for a system protected by a firewall
+# + aliasUser - Alias of the user who is logged in.
+# + mySapsso2 - The SAP cookie version 2 of the login ticket that should be used
+# + x509Cert - The X509-certificate of the login ticket
+# + extiddata - External identification login data of the user
+# + extidtype - Type of the external identification login data of the user
+# + sapRouter - SAP router String to use for a system that is protected by a firewall
 # + gwHost - Gateway host
 # + asHost - SAP application server
 # + msHost - SAP message server
@@ -90,20 +90,20 @@ public type Producer client object {
 # + gwServ - Gateway service
 # + r3Name - System ID of the SAP system
 # + serverGroup - The group of application servers
-# + trace - Enable or disable RFC trace (true or false)
+# + trace - Whether to enable or disable RFC trace (1 or 0 [default])
 # + useSapGui - Start a SAP GUI and associate with the connection. (0 - do not start [default], 1 start GUI,
 #   2 start GUI and hide if not used)
-# + codePage  - Initial logon codepage in SAP notatio
-# + getsso2  - Get/don't get an SSO ticket after logon (true or false)
+# + codePage  - Initial login codepage in SAP notation
+# + getsso2  - Whether or not to get an SSO ticket after logging in (1 or 0 [default])
 # + sncPartnerName - SNC partner, e.g. p:CN=R3, O=XYZ-INC, C=EN
-# + sncMode - Secure network connection (SNC) mode, false (off) or true (on)
-# + sncqop - SNC level of security (1-9)
-# + sncmyName - SNC name. Overrides default SNC partner
-# + sncLib - Path to library which provides SNC service
+# + sncMode - Whether the Secure Network Connection (SNC) mode is on (1) or off (0) [default]
+# + sncqop - SNC level of security (1-9, default:8)
+# + sncmyName - SNC name. This overrides the default SNC partner
+# + sncLib - Path to the library which provides the SNC service
 #   Valid values are true (yes, default) and false (no)
-# + tpName - The program ID of external server program
-# + tpHost - The host of external server program
-# + hostType - Type of remote host (3=R/3, E=External)
+# + tpName - The program ID of the external server program
+# + tpHost - The host of the external server program
+# + hostType - Type of the remote host (3=R/3, E=External)
 # + dest - The R/2 destination
 public type ProducerConfig record {
     string destinationName = "";
@@ -112,9 +112,9 @@ public type ProducerConfig record {
     string password = "";
     string language = "";
     string asHost = "";
+    string sysnr = "";
     string? mySapsso2 = "";
     string? aliasUser = "";
-    string? sysnr = "";
     string? extiddata = "";
     string? extidtype = "";
     string? sapRouter = "";
@@ -125,13 +125,13 @@ public type ProducerConfig record {
     string? gwServ = "";
     string? r3Name = "";
     string? serverGroup = "";
-    boolean trace = true;
-    int useSapGui = 0;
+    Value trace = 0;
+    Value useSapGui = 0;
     string? codePage = "";
-    boolean getsso2 = false;
+    Value getsso2 = 0;
     string? sncPartnerName = "";
-    boolean sncMode = false;
-    string? sncqop = "";
+    Value sncMode = 0;
+    SncQOP sncqop = 8;
     string? sncmyName = "";
     string? sncLib = "";
     string? tpName = "";

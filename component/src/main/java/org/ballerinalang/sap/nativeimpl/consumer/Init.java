@@ -22,6 +22,7 @@ import com.sap.conn.idoc.jco.JCoIDoc;
 import com.sap.conn.idoc.jco.JCoIDocServer;
 import com.sap.conn.jco.ext.Environment;
 import com.sap.conn.jco.server.JCoServer;
+import com.sap.conn.jco.server.JCoServerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.bre.Context;
@@ -38,10 +39,13 @@ import org.ballerinalang.util.exceptions.BallerinaException;
 import java.util.Properties;
 
 import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_SERVER_CONNECTOR_NAME;
+import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_SERVER_STRUCT_NAME;
 import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_TRANSPORT_NAME;
+import static org.ballerinalang.sap.utils.SapConstants.DESTINATION_CONFIG;
+import static org.ballerinalang.sap.utils.SapConstants.SERVER_CONFIG;
 
 /**
- * This is used to configure properties for destination and server, and made the RFC connection.
+ * This is used to configure the properties of the destination and server, and to create the RFC connection.
  */
 @BallerinaFunction(
     orgName = SapConstants.ORG_NAME,
@@ -56,19 +60,19 @@ import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_TRANSPORT_NAME;
 )
 public class Init extends BlockingNativeCallableUnit {
     private static final Log log = LogFactory.getLog(Init.class);
-    private static CustomDestinationDataProvider destinationDataProvider;
-    private static CustomServerDataProvider serverDataProvider;
+
     @Override
     public void execute(Context context) {
-
+        CustomDestinationDataProvider destinationDataProvider;
+        CustomServerDataProvider serverDataProvider;
         Struct serviceEndpoint = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
-        Struct serverConfig = serviceEndpoint.getStructField("serverConfig");
-        Struct destinationConfig = serviceEndpoint.getStructField("destinationConfig");
+        Struct serverConfig = serviceEndpoint.getStructField(SERVER_CONFIG);
+        Struct destinationConfig = serviceEndpoint.getStructField(DESTINATION_CONFIG);
         Properties serverProperties = SapUtils.getServerProperties(serverConfig);
         Properties destinationProperties = SapUtils.getDestinationProperties(destinationConfig);
         destinationDataProvider = new CustomDestinationDataProvider(destinationProperties);
-        String transportName = serverConfig.getStringField("transportName");
-        String serverName = serverConfig.getStringField("serverName");
+        String transportName = serverConfig.getStringField(CONSUMER_TRANSPORT_NAME);
+        String serverName = serverConfig.getStringField(CONSUMER_SERVER_STRUCT_NAME);
         serverDataProvider = new CustomServerDataProvider(serverProperties);
         if (!Environment.isDestinationDataProviderRegistered()) {
             Environment.registerDestinationDataProvider(destinationDataProvider);
@@ -79,19 +83,6 @@ public class Init extends BlockingNativeCallableUnit {
         if (transportName.equalsIgnoreCase(SapConstants.SAP_IDOC_PROTOCOL_NAME)) {
             try {
                 JCoIDocServer jcoIDocServer = JCoIDoc.getServer(serverName);
-                jcoIDocServer.setTIDHandler(new CustomServerTIDHandler());
-                jcoIDocServer.addServerErrorListener((server, connectionId, serverCtx, error) -> {
-                    log.info("Error occured on " + server.getProgramID() + " connection " + connectionId
-                            + error.toString());
-                });
-                jcoIDocServer.addServerExceptionListener((server, connectionId, serverCtx, error) -> {
-                    log.info("Exception occured on " + server.getProgramID() + " connection " + connectionId
-                            + error.toString());
-                });
-                jcoIDocServer.addServerStateChangedListener((server, oldState, newState) ->
-                        log.info("Server state changed from " + oldState.toString() + " to " + newState.toString()
-                                + " on server with program id " + server.getProgramID()));
-
                 serviceEndpoint.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoIDocServer);
                 serverConfig.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoIDocServer);
             } catch (Exception e) {
@@ -100,20 +91,7 @@ public class Init extends BlockingNativeCallableUnit {
             }
         } else {
             try {
-                JCoServer jcoServer = JCoIDoc.getServer(serverName);
-                jcoServer.setTIDHandler(new CustomServerTIDHandler());
-                jcoServer.addServerErrorListener((server, connectionId, serverCtx, error) -> {
-                    log.info("Error occured on " + server.getProgramID() + " connection " + connectionId
-                            + error.toString());
-                });
-                jcoServer.addServerExceptionListener((server, connectionId, serverCtx, error) -> {
-                    log.info("Exception occured on " + server.getProgramID() + " connection " + connectionId
-                            + error.toString());
-                });
-                jcoServer.addServerStateChangedListener((server, oldState, newState) ->
-                        log.info("Server state changed from " + oldState.toString() + " to " + newState.toString()
-                                + " on server with program id " + server.getProgramID()));
-
+                JCoServer jcoServer = JCoServerFactory.getServer(serverName);
                 serviceEndpoint.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoServer);
                 serverConfig.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoServer);
             } catch (Exception e) {

@@ -1,15 +1,15 @@
 ## Package overview
 
-Ballerina SAP Client Endpoint is used to connect Ballerina with SAP. With this SAO Client Endpoint, Ballerina can act as SAP Consumers and SAP Producers.
+The Ballerina SAP Client Endpoint is used to connect Ballerina with SAP. Ballerina SAP Client acts as a SAP producer while the Ballerina SAP Listener acts as a SAP Consumer.
 It has full IDoc and experimental BAPI support. It uses the SAP JCO library as the underlying framework to communicate with SAP. 
 
 ## Steps to Configure
 
- * Install the Java JDK 1.8
+ * Install Java JDK 1.8.
  * Download the sapidoc3.jar and sapjco3.jar middleware libraries from the SAP support portal and copy those libraries 
    to the <BRE_HOME>/bre/lib/ directory.
- * Download the native SAP JCo library and copy it to the system path. You need to select the system path applicable 
-   to your operating system as described below.
+ * Download the native SAP JCo library and copy it to the system path. You need to select the system path that is applicable 
+   to your Operating System as described below.
     
     <table class="tg">
       <tr>
@@ -27,26 +27,26 @@ It has full IDoc and experimental BAPI support. It uses the SAP JCO library as t
       </tr>
     </table>
     
- * Extract wso2-sap-<version>.zip and  Run the install.sh script to install the module.
+ * Extract the wso2-sap-<version>.zip file and execute the install.sh script to install the module.
   
-   You can uninstall the module by running uninstall.sh.
+   You can uninstall the module by executing the uninstall.sh script.
 
-Building From the Source
-==================================
-If you want to build Ballerina sap endpoint from the source code:
+## Building from the Source
 
-1. Get a clone or download the source from this repository:
-    [https://github.com/wso2-ballerina/module-sap](https://github.com/wso2-ballerina/module-sap)
-2. Create lib folder into the module-sap 
+Follow the steps below to build the Ballerina SAP endpoint from the source code:
+
+1. Get a clone or download [the source](https://github.com/wso2-ballerina/module-sap).
+2. Create a lib folder in the module-sap directory.
 3. Download the sapidoc3.jar and sapjco3.jar middleware libraries from the SAP support portal and copy those 
-   libraries to the module-sap/lib
-4. Run the following Maven command from the ballerina directory:
-    mvn clean install
-5. Extract the distribution created at `/component/target/wso2-sap-<version>.zip`. Run the install.{sh/bat} script to install the module.
-
-You can uninstall the module by running uninstall.{sh/bat}.    
+   libraries to the module-sap/lib directory.
+4. Navigate to the folder `module-sap` directory and execute the following Maven command:
     
-   
+        mvn clean install
+5. Extract the `/component/target/wso2-sap-<version>.zip` distribution. 
+6. Execute either of the install.{sh/bat} scripts to install the module.
+
+You can uninstall the module by executing either of the uninstall.{sh/bat} scripts.    
+       
 ## Samples
 
 ### Sample SAP client endpoint 
@@ -68,17 +68,15 @@ sap:Producer sapProducer = new(producerConfigs);
 
 #### Sample SAP client operations
 
-Following example demonstrates a way to publish a bapi to sap.
+The following example demonstrates how to publish a IDoc to SAP.
 
 ```ballerina
 string qname = "_-DSD_-ROUTEACCOUNT_CORDER002";
-int idocVersion = The version of IDoc;
+int idocVersion = >The version of IDoc>;
 xml idoc = xml `<IDoc Data>`; 
-NOTE: Here, If Any tag in the IDoc start with "_-", then you have to intialise that tag and use it in the IDoc. 
-      eg: <{{qname}}>...</{{qname}}>  
 
 public function main() {
-    var result = sapProducer-> sendIdocMessage(idocVersion, idoc);
+    var result = sapProducer->sendIdocMessage(idocVersion, idoc);
     if (result is error) {
         io:println("Error: ", result.reason());
     } else {
@@ -86,13 +84,13 @@ public function main() {
     }
 }
 ````
-
-Following example demonstrates a way to publish a bapi to sap.
+      
+The following example demonstrates how to publish a BAPI to SAP.
 
 ```ballerina
 xml baPiData = xml `<BAPI Data>`;
 public function main() {
-    var result = sapProducer-> sendBapiMessage(bapiData , false, false);
+    var result = sapProducer->sendBapiMessage(bapiData , false, false);
     if (result is error) {
         io:println("Error: ", result.reason());
     } else {
@@ -101,6 +99,29 @@ public function main() {
 }
 ```
 
+>Supported BAPI structure.
+       
+```xml
+   <BAPI_FUNCTION_NAME>
+       <import>
+            <structure name="NAME_OF_THE_STRUCTUER">
+                <field name="NAME_OF_THE_FIELD">"VALUE_OF_THE_FIELD"</field>
+                <!--Can create multiple fields-->
+            </structure>
+            <field name="NAME_OF_THE_FIELD">"VALUE_OF_THE_FIELD"</field>
+       </import>
+       <tables>
+            <table name="NAME_OF_THE_TABLE">
+                <row id="NAME_OF_THE_ID">
+                    <field name="NAME_OF_THE_FIELD">"VALUE_OF_THE_FIELD"</field>
+                    <!--Can create multiple fields-->
+                </row>
+            </table>
+            <!--Can create multiple table-->
+       </tables>
+   </BAPI_FUNCTION_NAME>
+```
+ 
 ### Sample SAP listener endpoint
 
 ```ballerina
@@ -127,8 +148,8 @@ listener sap:Listener consumerEP = new ({
 
 ```ballerina
 service SapConsumerTest on consumerEP {
-    resource function onMessage(string idocList) {
-        io:println("The message received from SAP instance : " + idocList);
+    resource function onMessage(string idoc) {
+        io:println("The message received from SAP instance : " + idoc);
     }
 
     resource function onError(error err) {

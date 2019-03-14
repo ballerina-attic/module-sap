@@ -25,8 +25,8 @@ import org.ballerinalang.util.exceptions.BallerinaException;
 import java.util.Properties;
 
 /**
- * The custom destination data provider implements DestinationDataProvider and
- *  provides an implementation for at least getDestinationProperties(String).
+ * The custom destination data provider implements the DestinationDataProvider and
+ *  provides an implementation for at least the getDestinationProperties(String) function.
  */
 public class CustomServerDataProvider implements ServerDataProvider {
 
@@ -37,13 +37,12 @@ public class CustomServerDataProvider implements ServerDataProvider {
     }
 
     /**
-     * Return Properties of the server
-     * @param serverName The server name
+     * Return the properties of the server
+     * @param serverName Name of the server
      * @return Properties of the server
      */
     @Override
     public Properties getServerProperties(String serverName) {
-
         if (serverProp != null) {
             return serverProp;
         }
@@ -58,13 +57,10 @@ public class CustomServerDataProvider implements ServerDataProvider {
      */
     @Override
     public void setServerDataEventListener(ServerDataEventListener dataEventListener) {
-
-        ServerDataEventListener listener = dataEventListener;
     }
 
     @Override
     public boolean supportsEvents() {
-
         return true;
     }
 }

@@ -26,11 +26,8 @@ import com.sap.conn.idoc.IDocXMLProcessor;
 import com.sap.conn.idoc.jco.JCoIDoc;
 import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.CallableUnitCallback;
-import org.ballerinalang.model.NativeCallableUnit;
+import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
@@ -47,7 +44,7 @@ import static org.ballerinalang.sap.utils.SapConstants.SAP_NATIVE_PACKAGE;
 import static org.ballerinalang.sap.utils.SapUtils.createError;
 
 /**
- * {@code Send} send the IDoc message to the  SAP Instance.
+ * {@code Send} Send the IDoc message to the  SAP instance.
  */
 @BallerinaFunction(
     orgName = ORG_NAME,
@@ -56,11 +53,10 @@ import static org.ballerinalang.sap.utils.SapUtils.createError;
     receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
             structPackage = SAP_NATIVE_PACKAGE)
 )
-public class SendIDocMessage implements NativeCallableUnit {
-    private static Log log = LogFactory.getLog(SendIDocMessage.class);
+public class SendIDocMessage extends BlockingNativeCallableUnit {
 
     @Override
-    public void execute(Context context, CallableUnitCallback callableUnitCallback) {
+    public void execute(Context context) {
         String idocVersion = String.valueOf(context.getIntArgument(0));
         String content = String.valueOf(context.getRefArgument(1));
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
@@ -93,14 +89,13 @@ public class SendIDocMessage implements NativeCallableUnit {
         } catch (JCoException e) {
             context.setReturnValues(createError(context, "Failed to connect the SAP gateway : "
                     + e.toString()));
+            createError(context, "Failed to connect the SAP gateway : "
+                    + e.toString());
         } catch (IDocParseException e) {
             context.setReturnValues(createError(context, "Error occurred when converting the data in " +
                     "as string [" + content + " ]  " + "to IDocList." + e.toString()));
+            createError(context, "Error occurred when converting the data in " +
+                    "as string [" + content + " ]  " + "to IDocList." + e.toString());
         }
-    }
-
-    @Override
-    public boolean isBlocking() {
-        return true;
     }
 }

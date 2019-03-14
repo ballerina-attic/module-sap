@@ -16,11 +16,8 @@
  * under the License.
  */
 
-
 package org.ballerinalang.sap.nativeimpl.producer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
@@ -29,10 +26,8 @@ import org.ballerinalang.model.values.BValue;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-
 public class SapProducerTest {
-    CompileResult compileResult;
-    private static Log log = LogFactory.getLog(SapProducerTest.class);
+    private CompileResult compileResult;
 
     @Test(description = "Test for send the IDoc to SAP instance")
     public void testSapIDocProducer() {

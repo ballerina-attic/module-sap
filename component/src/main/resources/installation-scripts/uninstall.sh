@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+# Uninstall the sap package from ballerina
+# Get the ballerina home path
 read -p "Enter Ballerina home: "  ballerina_home
 
 if [ ! -e "$ballerina_home/bin/ballerina" ]

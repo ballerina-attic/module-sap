@@ -26,8 +26,8 @@ import org.ballerinalang.util.exceptions.BallerinaException;
 import java.util.Properties;
 
 /**
- * The custom destination data provider implements DestinationDataProvider and
- * provides an implementation for at least getDestinationProperties(String).
+ * The custom destination data provider implements the DestinationDataProvider and
+ * provides an implementation for at least the getDestinationProperties(String) function.
  */
 public class CustomDestinationDataProvider implements DestinationDataProvider {
 
@@ -38,21 +38,17 @@ public class CustomDestinationDataProvider implements DestinationDataProvider {
     }
 
     /**
-     * Return Properties of the destination
-     * @param destName The destination name
+     * Return the properties of the destination.
+     * @param destName Name of the destination
      * @return Properties of the destination
      */
     @Override
     public Properties getDestinationProperties(String destName) {
-
-        if (connectionProp != null) {
-            if (connectionProp.isEmpty()) {
+        if (connectionProp != null && connectionProp.isEmpty()) {
                 throw new BallerinaException("Destination configuration is incorrect:"
                         + DataProviderException.Reason.INVALID_CONFIGURATION);
-            }
-            return connectionProp;
         } else {
-            return null;
+            return connectionProp;
         }
     }
 
@@ -64,13 +60,10 @@ public class CustomDestinationDataProvider implements DestinationDataProvider {
      */
     @Override
     public void setDestinationDataEventListener(DestinationDataEventListener dataEventListener) {
-
-        DestinationDataEventListener listener = dataEventListener;
     }
 
     @Override
     public boolean supportsEvents() {
-
         return true;
     }
 }

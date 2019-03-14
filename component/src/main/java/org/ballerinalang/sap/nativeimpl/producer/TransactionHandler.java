@@ -30,20 +30,19 @@ import org.ballerinalang.sap.utils.SapConstants;
 import static org.ballerinalang.sap.utils.SapUtils.createError;
 
 /**
- * <code> TransactionHandler </code> provides the transport Sender implementation for SAP endpoints
+ * <code> TransactionHandler </code> provides the Transport-Sender implementation for SAP endpoints.
  */
 public class TransactionHandler {
 
     private static Log log = LogFactory.getLog(TransactionHandler.class);
 
     /**
-     * Returns the BAPI/RFC function from the SAP repository
+     * Returns the BAPI/RFC function from the SAP repository.
      * @param destination SAP JCO destination
-     * @param rfcName the rfc name
-     * @return the BAPI/RFC function
+     * @param rfcName the name of the RFC
+     * @return The BAPI/RFC function
      */
     public static JCoFunction getRFCfunction(JCoDestination destination, String rfcName, Context context) {
-
         JCoFunction function = null;
         try {
             function = destination.getRepository().getFunction(rfcName);
@@ -55,18 +54,18 @@ public class TransactionHandler {
     }
 
     /**
-     * Evaluate the BAPI/RFC function in a remote R/* system
-     * @param function the BAPI/RFC function
-     * @param destination jco destination
+     * Evaluate the BAPI/RFC function in a remote R/* system.
+     * @param function The BAPI/RFC function
+     * @param destination The JCo destination
      * @return the result of the function execution
      */
     public static String evaluateRFCfunction(JCoFunction function, JCoDestination destination, Context context) {
-
         try {
             function.execute(destination);
         } catch (JCoException e) {
             context.setReturnValues(createError(context, "Cloud not execute the RFC function: " + function
                     + e.toString()));
+            createError(context, "Cloud not execute the RFC function: " + function + e.toString());
         }
         JCoStructure returnStructure = function.getExportParameterList().getStructure(SapConstants.RETURN);
         if (!(returnStructure.getString(SapConstants.TYPE).equals("") ||
@@ -78,19 +77,18 @@ public class TransactionHandler {
     }
 
     /**
-     * log onto one of the SAP CCMS system administration interfaces to retrieve the SAP function module.
-     * @param destination The destination
-     * @param productManufacturer The manufacturer of the product that wants to log onto a CCMS system
-     *                            administration interface.
-     * @param productName The name of the product that is to log onto a CCMS system administration interface
+     * Log in to one of the SAP CCMS system-administration interfaces to retrieve the SAP function module.
+     * @param destination The JCo destination
+     * @param productManufacturer The manufacturer of the product to whose CCMS system-
+     *  - administration interface that is being logged in
+     * @param productName The name of the product to whose CCMS system-administration interface that is being logged in
      * @param ccmsInterface The identification code of the interface
-     * @param cccmsInterfaceVersion The version of the CCMS system administration interface that expects
+     * @param cccmsInterfaceVersion The version of the CCMS system-administration interface that expects
      *                              the external product from the R/3 System
      * @param context The context
      */
     public static void logon(JCoDestination destination, String productManufacturer, String productName,
                              String ccmsInterface, String cccmsInterfaceVersion, Context context) {
-
         JCoFunction logonFunction = getRFCfunction(destination, SapConstants.BAPI_XMI_LOGON, context);
         logonFunction.getImportParameterList().setValue(SapConstants.EXTCOMPANY, productManufacturer);
         logonFunction.getImportParameterList().setValue(SapConstants.EXTPRODUCT, productName);
