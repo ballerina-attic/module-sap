@@ -41,7 +41,7 @@ public class SapUtils {
     }
 
     /**
-     * Set the server properties.
+     * Get the server properties.
      *
      * @param serverConfig server config
      */
@@ -88,7 +88,7 @@ public class SapUtils {
     }
 
     /**
-     * Set the destination properties
+     * Get the destination properties
      *
      * @param destinationConfig destination config
      */

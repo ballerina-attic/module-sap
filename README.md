@@ -54,7 +54,7 @@ You can uninstall the module by executing either of the uninstall.{sh/bat} scrip
  
 ## Running Tests
 
-* Obtain the following SAP credential and update these value in the module-sap/component/src/test/resources/producer/sap_bapi_producer.bal and module-sap/component/src/test/resources/producer/sap_idoc_producer.bal.
+* Obtain the following SAP credential and update these value in the `module-sap/component/src/test/resources/producer/sap_bapi_producer.bal` and `module-sap/component/src/test/resources/producer/sap_idoc_producer.bal`.
     ````
         destinationName:"The name of the SAP gateway",
         logonClient:"The SAP client ID (usually a number) used to connect to the SAP system",
@@ -64,11 +64,11 @@ You can uninstall the module by executing either of the uninstall.{sh/bat} scrip
         sysnr:"System number used to connect to the SAP system",
         language:"The language to use for the SAP connection. For example, en for English"
    ````
-* If you want to update the sample IDoc content, update it in the module-sap/component/src/test/resources/producer/sap_idoc_producer.bal.
+* If you want to update the sample IDoc content, update it in the `module-sap/component/src/test/resources/producer/sap_idoc_producer.bal`.
     ````
       xml idoc = xml `<IDoc/>`
     ````
-* If you want to update the sample BAPI content, update it in the module-sap/component/src/test/resources/producer/sap_bapi_producer.bal.
+* If you want to update the sample BAPI content, update it in the `module-sap/component/src/test/resources/producer/sap_bapi_producer.bal`.
     ````
       xml bapiData = xml `<BAPI/>`;
     ```` 
@@ -80,7 +80,7 @@ You can uninstall the module by executing either of the uninstall.{sh/bat} scrip
 
 ### SAP Producer
 
-The following example demonstrates how to publish a IDoc to SAP.
+The following example demonstrates how to publish an IDoc to SAP.
 
 ```ballerina
 import wso2/sap;

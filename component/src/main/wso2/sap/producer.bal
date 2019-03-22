@@ -51,7 +51,8 @@ public type Producer client object {
     # + doTransaction - Whether the BAPI_TRANSACTION_COMMIT is called after the LUW is completed successfully
     # + doLogon - Whether you log in to one of the SAP CCMS system-administration interfaces to retrieve
     #   the SAP function module
-    # + productManufacturer - The manufacturer of the product to whose CCMS system administration interface you want to log in to
+    # + productManufacturer - The manufacturer of the product to whose CCMS system administration interface you want to
+        log in to
     #   a CCMS system administration interface. If you log in to one of the SAP CCMS system-administration interfaces,
     #   it is mandatory
     # + productName - The name of the product to whose CCMS system-administration interface you want to log in to

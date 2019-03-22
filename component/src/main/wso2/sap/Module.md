@@ -68,7 +68,7 @@ sap:Producer sapProducer = new(producerConfigs);
 
 #### Sample SAP client operations
 
-The following example demonstrates how to publish a IDoc to SAP.
+The following example demonstrates how to publish an IDoc to SAP.
 
 ```ballerina
 string qname = "_-DSD_-ROUTEACCOUNT_CORDER002";
