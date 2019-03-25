@@ -52,16 +52,13 @@ public type Producer client object {
     # + doLogon - Whether you log in to one of the SAP CCMS system-administration interfaces to retrieve
     #   the SAP function module
     # + productManufacturer - The manufacturer of the product to whose CCMS system administration interface you want to
-        log in to
-    #   a CCMS system administration interface. If you log in to one of the SAP CCMS system-administration interfaces,
-    #   it is mandatory
+    #   log in to a CCMS system administration interface. If you log in to one of the SAP CCMS system-administration
+    #   interfaces, it is mandatory
     # + productName - The name of the product to whose CCMS system-administration interface you want to log in to
-    #   If you log in to one of the SAP CCMS system-administration interfaces,
-    #   it is mandatory.
+    #   If you log in to one of the SAP CCMS system-administration interfaces, it is mandatory.
     # + interface - The identification code of the interface that is to be used (such as XBR (DB backup),
     #   XBP (Background processing), XMB (Basic functions), XOM (Output management), and XDB (DB administration))
-    #   If you log in to one of the SAP CCMS system-administration interfaces,
-    #   it is mandatory.
+    #   If you log in to one of the SAP CCMS system-administration interfaces, it is mandatory.
     # + CCMSInterfaceVersion - The version of the CCMS system-administration interface that expects
     #   the external product from the R/3 System
     # + return - Returns an error if sending the BAPI fails.

@@ -84,8 +84,7 @@ public class SendIDocMessage extends BlockingNativeCallableUnit {
             String tid = destination.createTID();
             JCoIDoc.send(iDocList, setIdocVersion, destination, tid);
             destination.confirmTID(tid);
-            context.setReturnValues(new BString("IDoc sent successfully. The transaction ID for IDoc packet : "
-                    + tid));
+            context.setReturnValues(new BString(tid));
         } catch (JCoException e) {
             context.setReturnValues(createError(context, "Failed to connect the SAP gateway : "
                     + e.toString()));
