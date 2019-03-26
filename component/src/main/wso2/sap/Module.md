@@ -1,5 +1,3 @@
-# module-sap
-
 ## Package overview
 
 The Ballerina SAP Client Endpoint is used to connect Ballerina with SAP. Ballerina SAP Client acts as a SAP producer while the Ballerina SAP Listener acts as a SAP Consumer.
@@ -29,9 +27,9 @@ It has full IDoc and experimental BAPI support. It uses the SAP JCO library as t
       </tr>
     </table>
     
-* Extract the wso2-sap-<version>.zip file and execute the install.sh script to install the module.
+ * Extract the wso2-sap-<version>.zip file and execute the install.sh script to install the module.
   
-  You can uninstall the module by executing the uninstall.sh script.
+   You can uninstall the module by executing the uninstall.sh script.
 
 ## Building from the Source
 
@@ -44,47 +42,16 @@ Follow the steps below to build the Ballerina SAP endpoint from the source code:
 4. Navigate to the folder `module-sap` directory and execute the following Maven command:
     
         mvn clean install
-    
-    > If you want to run the test cases, please refer the [Running Tests](#running-tests). 
-    
 5. Extract the `/component/target/wso2-sap-<version>.zip` distribution. 
 6. Execute either of the install.{sh/bat} scripts to install the module.
 
 You can uninstall the module by executing either of the uninstall.{sh/bat} scripts.    
- 
-## Running Tests
-
-* Obtain the following SAP credential and update these value in the `module-sap/component/src/test/resources/producer/sap_bapi_producer.bal` and `module-sap/component/src/test/resources/producer/sap_idoc_producer.bal`.
-    ````
-        destinationName:"The name of the SAP gateway",
-        logonClient:"The SAP client ID (usually a number) used to connect to the SAP system",
-        userName:"Username of an authorized SAP user",
-        password:"Password credential of an authorized SAP user",
-        asHost:"The SAP endpoint",
-        sysnr:"System number used to connect to the SAP system",
-        language:"The language to use for the SAP connection. For example, en for English"
-   ````
-* If you want to update the sample IDoc content, update it in the `module-sap/component/src/test/resources/producer/sap_idoc_producer.bal`.
-    ````
-      xml idoc = xml `<IDoc/>`
-    ````
-* If you want to update the sample BAPI content, update it in the `module-sap/component/src/test/resources/producer/sap_bapi_producer.bal`.
-    ````
-      xml bapiData = xml `<BAPI/>`;
-    ```` 
-* Navigate to the folder `module-sap` directory and execute the following Maven command:
-
-        mvn clean install -DskipTests=false
-    
+       
 ## Samples
 
-### SAP Producer
-
-The following example demonstrates how to publish an IDoc to SAP.
+### Sample SAP client endpoint 
 
 ```ballerina
-import wso2/sap;
-import ballerina/io;
 
 sap:ProducerConfig producerConfigs = {
     destinationName:"<The SAP gateway name>",
@@ -97,14 +64,16 @@ sap:ProducerConfig producerConfigs = {
 };
 
 sap:Producer sapProducer = new(producerConfigs);
+```
 
-int idocVersion = 3;
-xml idoc = xml `<_-DSD_-ROUTEACCOUNT_CORDER002>
-                    <IDOC BEGIN="1">
-                        <EDI_DC40 SEGMENT="1">
-                        </EDI_DC40>
-                    </IDOC>
-                 </_-DSD_-ROUTEACCOUNT_CORDER002>`; 
+#### Sample SAP client operations
+
+The following example demonstrates how to publish an IDoc to SAP.
+
+```ballerina
+string qname = "_-DSD_-ROUTEACCOUNT_CORDER002";
+int idocVersion = >The version of IDoc>;
+xml idoc = xml `<IDoc Data>`; 
 
 public function main() {
     var result = sapProducer->sendIdocMessage(idocVersion, idoc);
@@ -115,13 +84,13 @@ public function main() {
     }
 }
 ````
-
+      
 The following example demonstrates how to publish a BAPI to SAP.
 
 ```ballerina
-xml bapi = xml `<BAPI_DOCUMENT_GETLIST></BAPI_DOCUMENT_GETLIST>`;
+xml baPiData = xml `<BAPI Data>`;
 public function main() {
-    var result = sapProducer->sendBapiMessage(bapi , false, false);
+    var result = sapProducer->sendBapiMessage(bapiData , false, false);
     if (result is error) {
         io:println("Error: ", result.reason());
     } else {
@@ -130,7 +99,7 @@ public function main() {
 }
 ```
 
->Supported BAPI structure
+>Supported BAPI structure.
        
 ```xml
    <BAPI_FUNCTION_NAME>
@@ -152,12 +121,10 @@ public function main() {
        </tables>
    </BAPI_FUNCTION_NAME>
 ```
-
-### SAP Consumer
+ 
+### Sample SAP listener endpoint
 
 ```ballerina
-import wso2/sap;
-import ballerina/io;
 
 listener sap:Listener consumerEP = new ({
     transportName:"<The protocol name[idoc/bapi]>",
@@ -173,14 +140,18 @@ listener sap:Listener consumerEP = new ({
     asHost:"<The R/3 application server>",
     sysnr:"<SAP system number, for example, 01>",
     language:"<The logon language>"
-});
+    }
+);
+```
+
+##Sample service for the SAP listener endpoint
+
+```ballerina
 service SapConsumerTest on consumerEP {
-    // The `resource` registered to receive server messages
     resource function onMessage(string idoc) {
         io:println("The message received from SAP instance : " + idoc);
     }
 
-    // The `resource` registered to receive server error messages
     resource function onError(error err) {
         io:println("Error from Connector: " + err.reason());
     }

@@ -19,5 +19,21 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# For virtual machine crash logs, see the [error_hotspot.xml](http://www.java.com/en/download/help/error_hotspot.xml) file.
 hs_err_pid*
+
+# Ignore everything in this directory.
+target
+.classpath
+.settings
+.project
+*.iml
+*.iws
+*.ipr
+.idea
+.m2
+
+#ignore conf.
+ballerina.conf
+target/
+.DS_Store
