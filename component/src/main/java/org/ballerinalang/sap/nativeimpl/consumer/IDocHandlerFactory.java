@@ -27,9 +27,9 @@ import com.sap.conn.idoc.jco.JCoIDocServerContext;
 import com.sap.conn.jco.server.JCoServerContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.bre.bvm.CallableUnitCallback;
+import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.Resource;
-import org.ballerinalang.model.values.BError;
+import org.ballerinalang.sap.utils.ResponseCallback;
 import org.ballerinalang.sap.utils.SapUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -49,9 +49,11 @@ public class IDocHandlerFactory implements JCoIDocHandlerFactory {
 
     private static Log log = LogFactory.getLog(IDocHandlerFactory.class);
     private Map<String, Resource> sapResource;
+    Context context;
 
-    public IDocHandlerFactory(Map<String, Resource> sapService) {
+    IDocHandlerFactory(Map<String, Resource> sapService, Context context) {
         this.sapResource = sapService;
+        this.context = context;
         log.info("......IDocHandlerFactory is created.");
     }
 
@@ -79,35 +81,10 @@ public class IDocHandlerFactory implements JCoIDocHandlerFactory {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try (OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8)) {
                 xmlProcessor.render(idocList, osw);
-                SapUtils.invokeOnMessage(baos.toString(), sapService, callback);
+                SapUtils.invokeOnMessage(baos.toString(), sapService, callback, context);
             } catch (IOException e) {
-                SapUtils.invokeOnError(sapService, callback, e.getMessage());
+                SapUtils.invokeOnError(sapService, callback, e.getMessage(), context);
             }
-        }
-    }
-
-    /**
-     *  This represents a callback to report back a success or a
-     *  failure state back to the originator.
-     */
-    private static class ResponseCallback implements CallableUnitCallback {
-
-        /**
-         * This should be called when you want to notify that your operation
-         * is done successfully.
-         */
-        public void notifySuccess() {
-            // Skip this
-        }
-
-        /**
-         * This should be called to notify the listener that your operation
-         * failed with a specific error.
-         *
-         * @param error the error to be reported when the operation failed
-         */
-        public void notifyFailure(BError error) {
-            // Skip this
         }
     }
 }

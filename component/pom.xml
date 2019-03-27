@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.ballerinalang</groupId>
-            <artifactId>ballerina-runtime</artifactId>
+            <artifactId>ballerina-runtime-api</artifactId>
             <type>zip</type>
             <classifier>ballerina-binary-repo</classifier>
         </dependency>
@@ -64,7 +64,7 @@
         </dependency>
         <dependency>
             <groupId>org.ballerinalang</groupId>
-            <artifactId>ballerina-runtime</artifactId>
+            <artifactId>ballerina-runtime-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ballerinalang</groupId>
@@ -77,18 +77,12 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>sapidoc3</groupId>
-            <artifactId>sap-idoc</artifactId>
-            <version>${sap.version}</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../lib/sapidoc3.jar</systemPath>
+            <groupId>com.sap.jco</groupId>
+            <artifactId>sapjco</artifactId>
         </dependency>
         <dependency>
-            <groupId>sapjco3</groupId>
-            <artifactId>sap-jco</artifactId>
-            <version>${sap.version}</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../lib/sapjco3.jar</systemPath>
+            <groupId>com.sap.jco</groupId>
+            <artifactId>sapidoc</artifactId>
         </dependency>
     </dependencies>
 

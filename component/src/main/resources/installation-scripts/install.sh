@@ -17,12 +17,6 @@
 # Get the ballerina home path
 read -p "Please enter Ballerina home: "  ballerina_home
 
-if [ ! -e "$ballerina_home/bin/ballerina" ]
-then
-    echo "Incorrect Ballerina Home provided!"
-    exit 1
-fi
-
 ballerina_lib_location=$ballerina_home/bre/lib/
 ballerina_balo_location=$ballerina_home/lib/repo/
 version=${project.version}

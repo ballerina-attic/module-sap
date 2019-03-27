@@ -17,13 +17,13 @@
 import wso2/sap;
 
 sap:ProducerConfig producerConfigs = {
-    destinationName:"The name of the SAP gateway",
-    logonClient:"The SAP client ID (usually a number) used to connect to the SAP system",
-    userName:"Username of an authorized SAP user",
-    password:"Password credential of an authorized SAP user",
-    asHost:"The SAP endpoint",
-    sysnr:"System number used to connect to the SAP system",
-    language:"The language to use for the SAP connection. For example, en for English"
+    destinationName:"ECQ",
+    ^"client":"301",
+    username:"XI2ECC4PL",
+    password:"Lmfhb12!@",
+    ashost:"10.122.1.146",
+    sysnr:"00",
+    language:"en"
 };
 
 int idocVersion = 3;

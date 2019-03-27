@@ -29,23 +29,7 @@ It has full IDoc and experimental BAPI support. It uses the SAP JCO library as t
     
  * Extract the wso2-sap-<version>.zip file and execute the install.sh script to install the module.
   
-   You can uninstall the module by executing the uninstall.sh script.
-
-## Building from the Source
-
-Follow the steps below to build the Ballerina SAP endpoint from the source code:
-
-1. Get a clone or download [the source](https://github.com/wso2-ballerina/module-sap).
-2. Create a lib folder in the module-sap directory.
-3. Download the sapidoc3.jar and sapjco3.jar middleware libraries from the SAP support portal and copy those 
-   libraries to the module-sap/lib directory.
-4. Navigate to the folder `module-sap` directory and execute the following Maven command:
-    
-        mvn clean install
-5. Extract the `/component/target/wso2-sap-<version>.zip` distribution. 
-6. Execute either of the install.{sh/bat} scripts to install the module.
-
-You can uninstall the module by executing either of the uninstall.{sh/bat} scripts.    
+   You can uninstall the module by executing the uninstall.sh script.   
        
 ## Samples
 
@@ -131,7 +115,7 @@ listener sap:Listener consumerEP = new ({
     serverName:"<Name of the server configuration>",
     gwHost:"<Gateway host on which the server should be registered>",
     progId:"<The program ID with which the registration is done>",
-    repositoryDestination:"<Name of the .dest file>",
+    repositoryDestination:"<Name of the repository>",
     gwServ:"<Gateway service>",
     unicode:"<Determines whether or not you connect in unicodemode>"}, {
     sapClient:"<SAP client, for example, 001>",

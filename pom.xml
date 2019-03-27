@@ -66,6 +66,16 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
+        <repository>
+            <id>maven-repo</id>
+            <name>Maven public repository</name>
+            <url>http://maven.mit.edu/nexus/content/repositories/public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -114,7 +124,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-runtime</artifactId>
+                <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
@@ -136,8 +146,20 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-runtime</artifactId>
+                <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.sap.jco/sapidoc -->
+            <dependency>
+                <groupId>com.sap.jco</groupId>
+                <artifactId>sapidoc</artifactId>
+                <version>${sapidoc3.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.sap.jco/sapjco -->
+            <dependency>
+                <groupId>com.sap.jco</groupId>
+                <artifactId>sapjco</artifactId>
+                <version>${sapjco.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
@@ -283,6 +305,8 @@
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
         <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
         <maven.shade.plugin.version>3.1.1</maven.shade.plugin.version>
+        <sapidoc3.version>3.0.12</sapidoc3.version>
+        <sapjco.version>3.0.14</sapjco.version>
         <skipTests>true</skipTests>
     </properties>
 

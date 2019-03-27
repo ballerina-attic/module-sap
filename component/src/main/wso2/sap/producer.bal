@@ -20,7 +20,7 @@
 # + producerConfig - Used to store configurations related to a SAP connection.
 public type Producer client object {
 
-    public ProducerConfig producerConfig;
+    ProducerConfig producerConfig;
 
     public function __init(ProducerConfig config) {
         self.producerConfig = config;
@@ -34,7 +34,7 @@ public type Producer client object {
     #
     # + config - Configurations related to the endpoint.
     # + return - Return an error if initialization failed.
-    extern function init(ProducerConfig config) returns error?;
+    function init(ProducerConfig config) returns error? = external;
 
     public map<any> producerHolder = {};
 
@@ -43,7 +43,7 @@ public type Producer client object {
     # + idocVersion - The version of the IDoc
     # + content - The message that used for transmission
     # + return - Returns an error if sending the IDoc fails.
-    public remote extern function sendIdocMessage(int idocVersion, xml content) returns string|error;
+    public remote function sendIdocMessage(int idocVersion, xml content) returns string|error = external;
 
     # Pushes data into the SAP instance by sending IDocs over RFC.
     #
@@ -62,78 +62,77 @@ public type Producer client object {
     # + CCMSInterfaceVersion - The version of the CCMS system-administration interface that expects
     #   the external product from the R/3 System
     # + return - Returns an error if sending the BAPI fails.
-    public remote extern function sendBapiMessage(xml content, boolean doTransaction, boolean doLogon,
+    public remote function sendBapiMessage(xml content, boolean doTransaction, boolean doLogon,
     string? productManufacturer = "", string? productName = "", string? interface = "",
-    string? CCMSInterfaceVersion = "") returns string|error;
+    string? CCMSInterfaceVersion = "") returns string|error = external;
 };
 
 # The Client endpoint configuration of SAP.
 #
 # + destinationName - Name of the SAP gateway
-# + sapClient - SAP Client
-# + userName - Username to log in to SAP
+# + ^"client" - SAP Client
+# + username - Username to log in to SAP
 # + password - Password to log in to SAP
 # + language - Language preferred by the user who is logged in
 # + sysnr - SAP system number
-# + aliasUser - Alias of the user who is logged in.
-# + mySapsso2 - The SAP cookie version 2 of the login ticket that should be used
+# + aliasuser - Alias of the user who is logged in.
+# + mysapsso2 - The SAP cookie version 2 of the login ticket that should be used
 # + x509Cert - The X509-certificate of the login ticket
 # + extiddata - External identification login data of the user
 # + extidtype - Type of the external identification login data of the user
-# + sapRouter - SAP router String to use for a system that is protected by a firewall
-# + gwHost - Gateway host
-# + asHost - SAP application server
-# + msHost - SAP message server
-# + msServ - SAP message server port to use instead of the default sapms sysid
-# + gwServ - Gateway service
-# + r3Name - System ID of the SAP system
-# + serverGroup - The group of application servers
+# + saprouter - SAP router String to use for a system that is protected by a firewall
+# + gwhost - Gateway host
+# + ashost - SAP application server
+# + mshost - SAP message server
+# + msserv - SAP message server port to use instead of the default sapms sysid
+# + gwserv - Gateway service
+# + r3name - System ID of the SAP system
+# + servergroup - The group of application servers
 # + trace - Whether to enable or disable RFC trace (1 or 0 [default])
-# + useSapGui - Start a SAP GUI and associate with the connection. (0 - do not start [default], 1 start GUI,
+# + usesapgui - Start a SAP GUI and associate with the connection. (0 - do not start [default], 1 start GUI,
 #   2 start GUI and hide if not used)
-# + codePage  - Initial login codepage in SAP notation
+# + codepage  - Initial login codepage in SAP notation
 # + getsso2  - Whether or not to get an SSO ticket after logging in (1 or 0 [default])
-# + sncPartnerName - SNC partner, e.g. p:CN=R3, O=XYZ-INC, C=EN
-# + sncMode - Whether the Secure Network Connection (SNC) mode is on (1) or off (0) [default]
+# + sncpartnername - SNC partner, e.g. p:CN=R3, O=XYZ-INC, C=EN
+# + sncmode - Whether the Secure Network Connection (SNC) mode is on (1) or off (0) [default]
 # + sncqop - SNC level of security (1-9, default:8)
-# + sncmyName - SNC name. This overrides the default SNC partner
-# + sncLib - Path to the library which provides the SNC service
-#   Valid values are true (yes, default) and false (no)
-# + tpName - The program ID of the external server program
-# + tpHost - The host of the external server program
-# + hostType - Type of the remote host (3=R/3, E=External)
+# + sncmyname - SNC name. This overrides the default SNC partner
+# + snclib - Path to the library which provides the SNC service Valid values are true (yes, default) and false (no)
+# + tpname - The program ID of the external server program
+# + tphost - The host of the external server program
+# + hosttype - Type of the remote host (3=R/3, E=External)
 # + dest - The R/2 destination
-public type ProducerConfig record {
+public type ProducerConfig record {|
     string destinationName = "";
-    string sapClient = "";
-    string userName = "";
+    string ^"client" = "";
+    string username = "";
     string password = "";
     string language = "";
-    string asHost = "";
+    string ashost = "";
     string sysnr = "";
-    string? mySapsso2 = "";
-    string? aliasUser = "";
+    string? mysapsso2 = "";
+    string? aliasuser = "";
     string? extiddata = "";
     string? extidtype = "";
-    string? sapRouter = "";
+    string? saprouter = "";
     string? x509Cert = "";
-    string? gwHost = "";
-    string? msHost = "";
-    string? msServ = "";
-    string? gwServ = "";
-    string? r3Name = "";
-    string? serverGroup = "";
+    string? gwhost = "";
+    string? mshost = "";
+    string? msserv = "";
+    string? gwserv = "";
+    string? r3name = "";
+    string? servergroup = "";
     Value trace = 0;
-    Value useSapGui = 0;
-    string? codePage = "";
+    Value usesapgui = 0;
+    string? codepage = "";
     Value getsso2 = 0;
-    string? sncPartnerName = "";
-    Value sncMode = 0;
+    string? sncpartnername = "";
+    Value sncmode = 0;
     SncQOP sncqop = 8;
-    string? sncmyName = "";
-    string? sncLib = "";
-    string? tpName = "";
-    string? tpHost = "";
-    string? hostType = "";
+    string? sncmyname = "";
+    string? snclib = "";
+    string? tpname = "";
+    string? tphost = "";
+    string? hosttype = "";
     string? dest = "";
-};
+|};

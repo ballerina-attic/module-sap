@@ -30,6 +30,7 @@ public class SapConstants {
 
     public static final String PATH_SEPARATOR = "/";
     public static final String BLOCK_SEPARATOR = ":";
+    public static final String SAP_SERVER_STATE = "[ballerina/sap] ";
 
     public static final String ORG_NAME = "wso2";
     public static final String PACKAGE_NAME = "sap";
@@ -98,16 +99,16 @@ public class SapConstants {
      * Server configuration constants.
      */
     public static class Serverproperties {
-        public static final String JCO_GWHOST = "gwHost";
-        public static final String JCO_PROGID = "progId";
-        public static final String JCO_REPOSITORY_DEST = "repositoryDestination";
-        public static final String JCO_GWSERV = "gwServ";
-        public static final String JCO_CONNECTION_COUNT = "connectionCount";
+        public static final String JCO_GWHOST = "gwhost";
+        public static final String JCO_PROGID = "progid";
+        public static final String JCO_REPOSITORY_DEST = "repositorydestination";
+        public static final String JCO_GWSERV = "gwserv";
+        public static final String JCO_CONNECTION_COUNT = "connectioncount";
 
         public static final String JCO_TRACE = "trace";
-        public static final String JCO_SNC_MYNAME = "sncMyName";
+        public static final String JCO_SNC_MYNAME = "sncmyname";
         public static final String JCO_SNC_QOP = "sncqop";
-        public static final String JCO_SNC_LIBRARY = "sncLib";
+        public static final String JCO_SNC_LIBRARY = "snclib";
         public static final String JCO_UNICODE = "unicode";
         public static final String JCO_SERVER_UNICODE = "jco.server.unicode";
     }
@@ -117,37 +118,37 @@ public class SapConstants {
      */
     public static class Clientproperties {
 
-        public static final String JCO_MSHOST = "msHost";
-        public static final String JCO_R3NAME = "r3Name";
-        public static final String JCO_CLIENT = "sapClient";
-        public static final String JCO_USER = "userName";
+        public static final String JCO_MSHOST = "mshost";
+        public static final String JCO_R3NAME = "r3name";
+        public static final String JCO_CLIENT = "client";
+        public static final String JCO_USER = "username";
         public static final String JCO_PASSWD = "password";
-        public static final String JCO_GROUP = "serverGroup";
+        public static final String JCO_GROUP = "servergroup";
         public static final String JCO_LANG = "language";
 
-        public static final String JCO_ALIAS_USER = "aliasUser";
+        public static final String JCO_ALIAS_USER = "aliasuser";
         public static final String JCO_SYSNR = "sysnr";
-        public static final String JCO_ASHOST = "asHost";
-        public static final String JCO_GWHOST = "gwHost";
-        public static final String JCO_GWSERV = "gwServ";
-        public static final String JCO_TPNAME = "tpName";
-        public static final String JCO_TPHOST = "tpHost";
-        public static final String JCO_TYPE = "hostType";
-        public static final String JCO_CODEPAGE = "codePage";
-        public static final String JCO_USE_SAPGUI = "useSapGui";
-        public static final String JCO_MYSAPSSO2 = "mySapsso2";
-        public static final String JCO_SNC_PARTNERNAME = "sncPartnerName";
-        public static final String JCO_SNC_MODE = "sncMode";
+        public static final String JCO_ASHOST = "ashost";
+        public static final String JCO_GWHOST = "gwhost";
+        public static final String JCO_GWSERV = "gwserv";
+        public static final String JCO_TPNAME = "tpname";
+        public static final String JCO_TPHOST = "tphost";
+        public static final String JCO_TYPE = "hosttype";
+        public static final String JCO_CODEPAGE = "codepage";
+        public static final String JCO_USE_SAPGUI = "usesapgui";
+        public static final String JCO_MYSAPSSO2 = "mysapsso2";
+        public static final String JCO_SNC_PARTNERNAME = "sncpartnername";
+        public static final String JCO_SNC_MODE = "sncmode";
         public static final String JCO_SNC_QOP = "sncqop";
-        public static final String JCO_SNC_MYNAME = "sncmyName";
-        public static final String JCO_SNC_LIBRARY = "sncLib";
+        public static final String JCO_SNC_MYNAME = "sncmyname";
+        public static final String JCO_SNC_LIBRARY = "snclib";
         public static final String JCO_DEST = "dest";
         public static final String JCO_EXTID_DATA = "extiddata";
         public static final String JCO_EXTID_TYPE = "extidtype";
         public static final String JCO_X509CERT = "x509Cert";
-        public static final String JCO_MSSERV = "msServ";
+        public static final String JCO_MSSERV = "msserv";
         public static final String JCO_TRACE = "trace";
         public static final String JCO_GETSSO2 = "getsso2";
-        public static final String JCO_SAPROUTER = "sapRouter";
+        public static final String JCO_SAPROUTER = "saprouter";
     }
 }
