@@ -17,13 +17,13 @@
 import wso2/sap;
 
 sap:ProducerConfig producerConfigs = {
-    destinationName:"ECQ",
-    ^"client":"301",
-    username:"XI2ECC4PL",
-    password:"Lmfhb12!@",
-    ashost:"10.122.1.146",
-    sysnr:"00",
-    language:"en"
+    destinationName:"<The SAP gateway name>",
+    ^"client:"<SAP client, for example, 001>",
+    username:"<The user logon>",
+    password:"<The logon password>",
+    ashost:"<The R/3 application server>",
+    sysnr:"<SAP system number, for example, 01>",
+    language:"<The logon language>"
 };
 
 int idocVersion = 3;
