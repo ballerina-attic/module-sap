@@ -123,6 +123,5 @@ public class Start extends BlockingNativeCallableUnit {
             jcoIDocServer.start();
             console.println("IDoc Server started...........");
         }
-
     }
 }

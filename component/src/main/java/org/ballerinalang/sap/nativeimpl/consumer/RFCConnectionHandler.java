@@ -29,6 +29,7 @@ import org.ballerinalang.connector.api.Resource;
 import org.ballerinalang.model.values.BError;
 import org.ballerinalang.sap.utils.SapUtils;
 
+import java.io.PrintStream;
 import java.util.Map;
 
 /**
@@ -44,6 +45,7 @@ public class RFCConnectionHandler implements JCoServerFunctionHandler {
     private ResponseCallback callback;
     private Map<String, Resource> sapResource;
     private Context context;
+    private static final PrintStream console = System.out;
 
     RFCConnectionHandler(Map<String, Resource> sapService, Context context) {
         this.sapResource = sapService;
@@ -61,10 +63,11 @@ public class RFCConnectionHandler implements JCoServerFunctionHandler {
         if (log.isDebugEnabled()) {
             log.debug("New BAPI function call received");
         }
+        console.println("New BAPI function call received");
         jCoFunction.getExportParameterList().setValue("ECHOTEXT", jCoFunction.getImportParameterList()
                 .getString("REQUTEXT"));
         String output = jCoFunction.getImportParameterList().getString("REQUTEXT");
-        SapUtils.invokeOnMessage(output, sapResource, callback, context);
+        SapUtils.invokeOnBapiMessage(output, sapResource, callback, context);
     }
 
     private static class ResponseCallback implements CallableUnitCallback {

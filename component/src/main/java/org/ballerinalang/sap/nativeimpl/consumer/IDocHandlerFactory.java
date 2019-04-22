@@ -29,13 +29,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.Resource;
+import org.ballerinalang.model.util.XMLUtils;
+import org.ballerinalang.model.values.BXML;
 import org.ballerinalang.sap.utils.ResponseCallback;
 import org.ballerinalang.sap.utils.SapUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.io.PrintStream;
+import java.io.StringReader;
 import java.util.Map;
 
 /**
@@ -50,6 +50,7 @@ public class IDocHandlerFactory implements JCoIDocHandlerFactory {
     private static Log log = LogFactory.getLog(IDocHandlerFactory.class);
     private Map<String, Resource> sapResource;
     Context context;
+    private static final PrintStream console = System.out;
 
     IDocHandlerFactory(Map<String, Resource> sapService, Context context) {
         this.sapResource = sapService;
@@ -73,18 +74,16 @@ public class IDocHandlerFactory implements JCoIDocHandlerFactory {
         }
 
         public void handleRequest(JCoServerContext serverCtx, IDocDocumentList idocList) {
-            if (log.isDebugEnabled()) {
-                log.debug("New IDoc received");
-            }
-            log.info("IDocDocumentList type: " + idocList.getIDocType());
+            console.println("New IDoc received");
             IDocXMLProcessor xmlProcessor = JCoIDoc.getIDocFactory().getIDocXMLProcessor();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try (OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8)) {
-                xmlProcessor.render(idocList, osw);
-                SapUtils.invokeOnMessage(baos.toString(), sapService, callback, context);
-            } catch (IOException e) {
-                SapUtils.invokeOnError(sapService, callback, e.getMessage(), context);
+            String xmlString = xmlProcessor.render(idocList);
+            StringReader reader = new StringReader(xmlString);
+            BXML xml = XMLUtils.parse(reader);
+            if (log.isDebugEnabled()) {
+                log.info("xmlString : " + xmlProcessor.render(idocList));
+                log.info("IDocDocumentList type: " + xmlString);
             }
+            SapUtils.invokeOnIdocMessage(xml, sapService, callback, context);
         }
     }
 }

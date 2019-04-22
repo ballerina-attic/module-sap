@@ -149,18 +149,6 @@
                 <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/com.sap.jco/sapidoc -->
-            <dependency>
-                <groupId>com.sap.jco</groupId>
-                <artifactId>sapidoc</artifactId>
-                <version>${sapidoc3.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/com.sap.jco/sapjco -->
-            <dependency>
-                <groupId>com.sap.jco</groupId>
-                <artifactId>sapjco</artifactId>
-                <version>${sapjco.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina-core</artifactId>
@@ -284,7 +272,7 @@
 
     <properties>
         <sap.version>3</sap.version>
-        <ballerina.version>0.990.4-SNAPSHOT</ballerina.version>
+        <ballerina.version>0.991.0</ballerina.version>
         <org.testng.version>6.11</org.testng.version>
         <maven.findbugsplugin.version.exclude>findbugs-exclude.xml</maven.findbugsplugin.version.exclude>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>

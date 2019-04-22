@@ -38,14 +38,17 @@ It has full IDoc and experimental BAPI support. It uses the SAP JCO library as t
 Follow the steps below to build the Ballerina SAP endpoint from the source code:
 
 1. Get a clone or download [the source](https://github.com/wso2-ballerina/module-sap).
-2. Navigate to the folder `module-sap` directory and execute the following Maven command:
+2. Create a lib folder in the module-sap directory.
+   
+3. Download the sapidoc3.jar and sapjco3.jar middleware libraries from the SAP support portal and copy those libraries to the module-sap/lib directory.
+4. Navigate to the folder `module-sap` directory and execute the following Maven command:
     
         mvn clean install
     
     > If you want to run the test cases, please refer the [Running Tests](#running-tests). 
     
-3. Extract the `/component/target/wso2-sap-<version>.zip` distribution. 
-4. Execute either of the install.{sh/bat} scripts to install the module.
+5. Extract the `/component/target/wso2-sap-<version>.zip` distribution. 
+6. Execute either of the install.{sh/bat} scripts to install the module.
 
 You can uninstall the module by executing either of the uninstall.{sh/bat} scripts.    
  
@@ -85,10 +88,10 @@ import ballerina/io;
 
 sap:ProducerConfig producerConfigs = {
     destinationName:"<The SAP gateway name>",
-    sapClient:"<SAP client, for example, 001>",
-    userName:"<The user logon>",
+    ^"client:"<SAP client, for example, 001>",
+    username:"<The user logon>",
     password:"<The logon password>",
-    asHost:"<The R/3 application server>",
+    ashost:"<The R/3 application server>",
     sysnr:"<SAP system number, for example, 01>",
     language:"<The logon language>"
 };
@@ -118,7 +121,7 @@ The following example demonstrates how to publish a BAPI to SAP.
 ```ballerina
 xml bapi = xml `<BAPI_DOCUMENT_GETLIST></BAPI_DOCUMENT_GETLIST>`;
 public function main() {
-    var result = sapProducer->sendBapiMessage(bapi , false, false);
+    var result = sapProducer->sendBapiMessage(bapi, false, false);
     if (result is error) {
         io:println("Error: ", result.reason());
     } else {
@@ -152,6 +155,8 @@ public function main() {
 
 ### SAP Consumer
 
+The following example demonstrates how to receive an IDoc from SAP instance.
+
 ```ballerina
 import wso2/sap;
 import ballerina/io;
@@ -159,22 +164,22 @@ import ballerina/io;
 listener sap:Listener consumerEP = new ({
     transportName:"<The protocol name[idoc/bapi]>",
     serverName:"<Name of the server configuration>",
-    gwHost:"<Gateway host on which the server should be registered>",
-    progId:"<The program ID with which the registration is done>",
-    repositoryDestination:"<Name of the repository>",
-    gwServ:"<Gateway service>",
+    gwhost:"<Gateway host on which the server should be registered>",
+    progid:"<The program ID with which the registration is done>",
+    repositorydestination:"<Name of the repository>",
+    gwserv:"<Gateway service>",
     unicode:"<Determines whether or not you connect in unicodemode>"}, 
     {
-    sapClient:"<SAP client, for example, 001>",
-    userName:"<The user logon>",
+    ^"client:"<SAP client, for example, 001>",
+    username:"<The user logon>",
     password:"<The logon password>",
-    asHost:"<The R/3 application server>",
+    ashost:"<The R/3 application server>",
     sysnr:"<SAP system number, for example, 01>",
     language:"<The logon language>"
 });
 service SapConsumerTest on consumerEP {
     // The `resource` registered to receive server messages
-    resource function onMessage(string idoc) {
+    resource function onMessage(xml idoc) {
         io:println("The message received from SAP instance : " + idoc);
     }
 

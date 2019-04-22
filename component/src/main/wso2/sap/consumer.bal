@@ -18,8 +18,8 @@
 public type Listener object {
     *AbstractListener;
 
-    private ConsumerServerConfig serverConfig = {};
-    private ConsumerDestinationConfig destinationConfig = {};
+    public ConsumerServerConfig serverConfig = {};
+    public ConsumerDestinationConfig destinationConfig = {};
 
     public function __init(ConsumerServerConfig servConfig, ConsumerDestinationConfig destConfig) {
         self.serverConfig = servConfig;

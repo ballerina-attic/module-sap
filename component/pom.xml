@@ -77,12 +77,18 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.sap.jco</groupId>
-            <artifactId>sapjco</artifactId>
+            <groupId>sapidoc3</groupId>
+            <artifactId>sap-idoc</artifactId>
+            <version>${sap.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/../lib/sapidoc3.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>com.sap.jco</groupId>
-            <artifactId>sapidoc</artifactId>
+            <groupId>sapjco3</groupId>
+            <artifactId>sap-jco</artifactId>
+            <version>${sap.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/../lib/sapjco3.jar</systemPath>
         </dependency>
     </dependencies>
 

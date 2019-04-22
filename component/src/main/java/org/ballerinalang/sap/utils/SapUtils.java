@@ -14,6 +14,7 @@ import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BXML;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -271,18 +272,40 @@ public class SapUtils {
     /**
      * Invoke the 'onMessage' resource.
      *
-     * @param output The output
+     * @param output      Required for the resource
+     * @param sapResource The resource
+     * @param callback    Callback to return the response values
+     * @param context     Current context instance
      */
-    public static void invokeOnMessage(String output, Map<String, Resource> sapService, CallableUnitCallback callback,
-                                       Context context) {
+    public static void invokeOnBapiMessage(String output, Map<String, Resource> sapResource,
+                                           CallableUnitCallback callback, Context context) {
         try {
             Map<String, Object> properties = new HashMap<>();
-            Resource onMessageResource = sapService.get(RESOURCE_ON_MESSAGE);
+            Resource onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
             BValue[] bValues = new BValue[1];
             bValues[0] = new BString(output);
             Executor.submit(onMessageResource, callback, properties, null, bValues);
         } catch (BallerinaConnectorException e) {
-            SapUtils.invokeOnError(sapService, callback, e.getMessage(), context);
+            SapUtils.invokeOnError(sapResource, callback, e.getMessage(), context);
+        }
+    }
+
+    /**
+     * Invoke the 'onMessage' resource.
+     *
+     * @param xml           Required for the resource
+     * @param sapResource   The resource
+     * @param callback      Callback to return the response values
+     * @param context       Current context instance
+     */
+    public static void invokeOnIdocMessage(BXML xml, Map<String, Resource> sapResource, CallableUnitCallback callback,
+                                       Context context) {
+        try {
+            Map<String, Object> properties = new HashMap<>();
+            Resource onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
+            Executor.submit(onMessageResource, callback, properties, null, xml);
+        } catch (BallerinaConnectorException e) {
+            SapUtils.invokeOnError(sapResource, callback, e.getMessage(), context);
         }
     }
 }
