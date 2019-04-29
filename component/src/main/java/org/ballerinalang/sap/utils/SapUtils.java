@@ -282,7 +282,6 @@ public class SapUtils {
         try {
             Map<String, Object> properties = new HashMap<>();
             Resource onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
-            BValue[] bValues = new BValue[1];
             Executor.submit(onMessageResource, callback, properties, null, new BString(output));
         } catch (BallerinaConnectorException e) {
             SapUtils.invokeOnError(sapResource, callback, e.getMessage(), context);

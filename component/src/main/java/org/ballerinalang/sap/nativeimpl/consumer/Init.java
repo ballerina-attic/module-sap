@@ -90,8 +90,7 @@ public class Init extends BlockingNativeCallableUnit {
             } catch (JCoException e) {
                 context.setReturnValues(createError(context, "Could not get the IDoc server " + serverName +
                         ": " + e.toString()));
-                throw new BallerinaException("Could not get the IDoc server " + serverName + ": "
-                        + e.toString());
+                throw new BallerinaException("Could not get the IDoc server " + serverName + ": " + e.toString());
             }
         } else {
             try {
@@ -101,8 +100,7 @@ public class Init extends BlockingNativeCallableUnit {
             } catch (JCoException e) {
                 context.setReturnValues(createError(context, "Could not get the IDoc server " + serverName +
                         ": " + e.toString()));
-                throw new BallerinaException("Could not get the IDoc server " + serverName + ": "
-                        + e.toString());
+                throw new BallerinaException("Could not get the IDoc server " + serverName + ": " + e.toString());
             }
         }
         serviceEndpoint.addNativeData(CONSUMER_TRANSPORT_NAME, transportName);
