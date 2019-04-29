@@ -38,7 +38,7 @@ public type Listener object {
         return self.stop();
     }
 
-    public function __attach(service s, string? name) returns error? {
+    public function __attach(service s, string? name = ()) returns error? {
         return self.register(s, name);
     }
 

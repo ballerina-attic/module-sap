@@ -32,7 +32,7 @@ import org.ballerinalang.sap.utils.SapUtils;
 import java.util.Map;
 
 /**
- *
+ * A class that handles the errors when JcoServer to be started.
  */
 public class ThrowableListener implements JCoServerErrorListener, JCoServerExceptionListener {
 

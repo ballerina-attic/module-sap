@@ -87,13 +87,13 @@ import wso2/sap;
 import ballerina/io;
 
 sap:ProducerConfig producerConfigs = {
-    destinationName:"<The SAP gateway name>",
-    ^"client:"<SAP client, for example, 001>",
-    username:"<The user logon>",
-    password:"<The logon password>",
-    ashost:"<The R/3 application server>",
-    sysnr:"<SAP system number, for example, 01>",
-    language:"<The logon language>"
+    destinationName: "<The SAP gateway name>",
+    ^"client: "<SAP client, for example, 001>",
+    username: "<The user logon>",
+    password: "<The logon password>",
+    ashost: "<The R/3 application server>",
+    sysnr: "<SAP system number, for example, 01>",
+    language: "<The logon language>"
 };
 
 sap:Producer sapProducer = new(producerConfigs);
@@ -155,37 +155,37 @@ public function main() {
 
 ### SAP Consumer
 
-The following example demonstrates how to receive an IDoc from SAP instance.
+The following example demonstrates how to receive an IDoc from a SAP instance.
 
 ```ballerina
 import wso2/sap;
 import ballerina/io;
 
 listener sap:Listener consumerEP = new ({
-    transportName:"<The protocol name[idoc/bapi]>",
-    serverName:"<Name of the server configuration>",
-    gwhost:"<Gateway host on which the server should be registered>",
-    progid:"<The program ID with which the registration is done>",
-    repositorydestination:"<Name of the repository>",
-    gwserv:"<Gateway service>",
-    unicode:"<Determines whether or not you connect in unicodemode>"}, 
+    transportName: "<The protocol name[idoc/bapi]>",
+    serverName: "<Name of the server configuration>",
+    gwhost: "<Gateway host on which the server should be registered>",
+    progid: "<The program ID with which the registration is done>",
+    repositorydestination: "<Name of the repository>",
+    gwserv: "<Gateway service>",
+    unicode: "<Determines whether or not you connect in unicodemode>"}, 
     {
-    ^"client:"<SAP client, for example, 001>",
-    username:"<The user logon>",
-    password:"<The logon password>",
-    ashost:"<The R/3 application server>",
-    sysnr:"<SAP system number, for example, 01>",
-    language:"<The logon language>"
+    ^"client: "<SAP client, for example, 001>",
+    username: "<The user logon>",
+    password: "<The logon password>",
+    ashost: "<The R/3 application server>",
+    sysnr: "<SAP system number, for example, 01>",
+    language: "<The logon language>"
 });
 service SapConsumerTest on consumerEP {
     // The `resource` registered to receive server messages
     resource function onMessage(xml idoc) {
-        io:println("The message received from SAP instance : " + idoc);
+       io:println("Message received from SAP instance: ", idoc);
     }
 
     // The `resource` registered to receive server error messages
     resource function onError(error err) {
-        io:println("Error from Connector: " + err.reason());
+       io:println("Error: ", err.reason());
     }
 }
 ```

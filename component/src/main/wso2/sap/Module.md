@@ -38,13 +38,13 @@ It has full IDoc and experimental BAPI support. It uses the SAP JCO library as t
 ```ballerina
 
 sap:ProducerConfig producerConfigs = {
-    destinationName:"<The SAP gateway name>",
-    ^"client:"<SAP client, for example, 001>",
-    username:"<The user logon>",
-    password:"<The logon password>",
-    ashost:"<The R/3 application server>",
-    sysnr:"<SAP system number, for example, 01>",
-    language:"<The logon language>"
+    destinationName: "<The SAP gateway name>",
+    ^"client: "<SAP client, for example, 001>",
+    username: "<The user logon>",
+    password: "<The logon password>",
+    ashost: "<The R/3 application server>",
+    sysnr: "<SAP system number, for example, 01>",
+    language: "<The logon language>"
 };
 
 sap:Producer sapProducer = new(producerConfigs);
@@ -110,36 +110,36 @@ public function main() {
 ```ballerina
 
 listener sap:Listener consumerEP = new ({
-    transportName:"<The protocol name[idoc/bapi]>",
-    serverName:"<Name of the server configuration>",
-    gwhost:"<Gateway host on which the server should be registered>",
-    progid:"<The program ID with which the registration is done>",
-    repositorydestination:"<Name of the repository>",
-    gwserv:"<Gateway service>",
-    unicode:"<Determines whether or not you connect in unicodemode>"}, 
+    transportName: "<The protocol name[idoc/bapi]>",
+    serverName: "<Name of the server configuration>",
+    gwhost: "<Gateway host on which the server should be registered>",
+    progid: "<The program ID with which the registration is done>",
+    repositorydestination: "<Name of the repository>",
+    gwserv: "<Gateway service>",
+    unicode: "<Determines whether or not you connect in unicodemode>"}, 
     {
-    ^"client:"<SAP client, for example, 001>",
-    username:"<The user logon>",
-    password:"<The logon password>",
-    ashost:"<The R/3 application server>",
-    sysnr:"<SAP system number, for example, 01>",
-    language:"<The logon language>"
+    ^"client: "<SAP client, for example, 001>",
+    username: "<The user logon>",
+    password: "<The logon password>",
+    ashost: "<The R/3 application server>",
+    sysnr: "<SAP system number, for example, 01>",
+    language: "<The logon language>"
     }
 );
 ```
 
 ## Sample service for the SAP listener endpoint
 
-The following example demonstrates how to receive an IDoc from SAP instance.
+The following example demonstrates how to receive an IDoc from a SAP instance.
 
 ```ballerina
 service SapConsumerTest on consumerEP {
     resource function onMessage(xml idoc) {
-        io:println("The message received from SAP instance : " + idoc);
+        io:println("Message received from SAP instance: ", idoc);
     }
 
     resource function onError(error err) {
-        io:println("Error from Connector: " + err.reason());
+        io:println("Error: ", err.reason());
     }
 }
 ```
@@ -149,11 +149,11 @@ The following example demonstrates how to receive a BAPI from SAP instance.
 ```ballerina
 service SapConsumerTest on consumerEP {
     resource function onMessage(string bapi) {
-        io:println("The message received from SAP instance : " + bapi);
+        io:println("Message received from SAP instance: ", bapi);
     }
 
     resource function onError(error err) {
-        io:println("Error from Connector: " + err.reason());
+        io:println("Error: ", err.reason());
     }
 }
 ```

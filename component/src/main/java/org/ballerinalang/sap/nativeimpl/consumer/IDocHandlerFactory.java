@@ -34,7 +34,6 @@ import org.ballerinalang.model.values.BXML;
 import org.ballerinalang.sap.utils.ResponseCallback;
 import org.ballerinalang.sap.utils.SapUtils;
 
-import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.Map;
 
@@ -50,7 +49,6 @@ public class IDocHandlerFactory implements JCoIDocHandlerFactory {
     private static Log log = LogFactory.getLog(IDocHandlerFactory.class);
     private Map<String, Resource> sapResource;
     Context context;
-    private static final PrintStream console = System.out;
 
     IDocHandlerFactory(Map<String, Resource> sapService, Context context) {
         this.sapResource = sapService;
@@ -74,7 +72,10 @@ public class IDocHandlerFactory implements JCoIDocHandlerFactory {
         }
 
         public void handleRequest(JCoServerContext serverCtx, IDocDocumentList idocList) {
-            console.println("New IDoc received");
+            if (log.isDebugEnabled()) {
+                log.debug("New IDoc received");
+            }
+            log.info("IDocDocumentList type: " + idocList.getIDocType());
             IDocXMLProcessor xmlProcessor = JCoIDoc.getIDocFactory().getIDocXMLProcessor();
             String xmlString = xmlProcessor.render(idocList);
             StringReader reader = new StringReader(xmlString);

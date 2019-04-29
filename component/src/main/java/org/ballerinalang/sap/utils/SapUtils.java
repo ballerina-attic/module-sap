@@ -283,8 +283,7 @@ public class SapUtils {
             Map<String, Object> properties = new HashMap<>();
             Resource onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
             BValue[] bValues = new BValue[1];
-            bValues[0] = new BString(output);
-            Executor.submit(onMessageResource, callback, properties, null, bValues);
+            Executor.submit(onMessageResource, callback, properties, null, new BString(output));
         } catch (BallerinaConnectorException e) {
             SapUtils.invokeOnError(sapResource, callback, e.getMessage(), context);
         }
