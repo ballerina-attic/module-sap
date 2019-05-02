@@ -41,9 +41,6 @@ public class StateChangedListener implements JCoServerStateChangedListener {
 
         String message =  "Server state changed from " + oldState.toString() + " to " + newState.toString()
                 + " on server with program id " + jCoServer.getProgramID();
-        if (log.isDebugEnabled()) {
-            log.info(message);
-        }
         console.println(SAP_SERVER_STATE + message);
     }
 }

@@ -80,10 +80,6 @@ public class IDocHandlerFactory implements JCoIDocHandlerFactory {
             String xmlString = xmlProcessor.render(idocList);
             StringReader reader = new StringReader(xmlString);
             BXML xml = XMLUtils.parse(reader);
-            if (log.isDebugEnabled()) {
-                log.info("xmlString : " + xmlProcessor.render(idocList));
-                log.info("IDocDocumentList type: " + xmlString);
-            }
             SapUtils.invokeOnIdocMessage(xml, sapService, callback, context);
         }
     }
