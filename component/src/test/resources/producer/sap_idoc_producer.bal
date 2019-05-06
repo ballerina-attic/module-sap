@@ -17,13 +17,13 @@
 import wso2/sap;
 
 sap:ProducerConfig producerConfigs = {
-    destinationName:"<The SAP gateway name>",
-    ^"client:"<SAP client, for example, 001>",
-    username:"<The user logon>",
-    password:"<The logon password>",
-    ashost:"<The R/3 application server>",
-    sysnr:"<SAP system number, for example, 01>",
-    language:"<The logon language>"
+    destinationName: "<The SAP gateway name>",
+    ^"client: "<SAP client, for example, 001>",
+    username: "<The user logon>",
+    password: "<The logon password>",
+    ashost: "<The R/3 application server>",
+    sysnr: "<SAP system number, for example, 01>",
+    language: "<The logon language>"
 };
 
 int idocVersion = 3;

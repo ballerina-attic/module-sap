@@ -52,9 +52,6 @@ public class ThrowableListener implements JCoServerErrorListener, JCoServerExcep
                                     Error error) {
         String message = "Exception occurred on " + server.getProgramID() + " connection " + connectionId
                 + error.toString();
-        if (log.isDebugEnabled()) {
-            log.info(message);
-        }
         SapUtils.invokeOnError(sapService, callback, error.getMessage(), context);
     }
 
@@ -63,9 +60,6 @@ public class ThrowableListener implements JCoServerErrorListener, JCoServerExcep
                                         Exception error) {
         String message =  "Exception occurred on " + server.getProgramID() + " connection " + connectionId
                 + error.toString();
-        if (log.isDebugEnabled()) {
-            log.info(message);
-        }
         SapUtils.invokeOnError(sapService, callback, error.getMessage(), context);
     }
 }
