@@ -258,12 +258,7 @@ public class SapUtils {
                                      Context context) {
         try {
             Resource errorResource = sapService.get(RESOURCE_ON_ERROR);
-            if (log.isDebugEnabled()) {
-                log.info("invokeOnError : " + sapService.get(RESOURCE_ON_ERROR).getName());
-            }
-            BValue[] bValues = new BValue[1];
-            bValues[0] = createError(context, error);
-            Executor.submit(errorResource, callback, null, null, bValues);
+            Executor.submit(errorResource, callback, null, null, createError(context, error));
         } catch (Throwable e) {
             log.error("Error while executing onError resource", e);
         }
