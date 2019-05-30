@@ -135,11 +135,11 @@ The following example demonstrates how to receive an IDoc from a SAP instance.
 ```ballerina
 service SapConsumerTest on consumerEP {
     resource function onMessage(xml idoc) {
-        io:println("Message received from SAP instance: ", idoc);
+        log:printInfo("Message received from SAP instance: " + idoc);
     }
 
-    resource function onError(error err) {
-        io:println("Error: ", err.reason());
+    resource function onError(error e) {
+        log:printError("Error: ", err = e);
     }
 }
 ```
@@ -149,11 +149,11 @@ The following example demonstrates how to receive a BAPI from SAP instance.
 ```ballerina
 service SapConsumerTest on consumerEP {
     resource function onMessage(string bapi) {
-        io:println("Message received from SAP instance: ", bapi);
+        log:printInfo("Message received from SAP instance: " + bapi);
     }
 
-    resource function onError(error err) {
-        io:println("Error: ", err.reason());
+    resource function onError(error e) {
+        log:printError("Error: ", err = e);
     }
 }
 ```

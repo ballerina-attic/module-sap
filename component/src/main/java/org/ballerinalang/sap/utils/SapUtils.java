@@ -13,7 +13,6 @@ import org.ballerinalang.connector.api.Resource;
 import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.model.values.BXML;
 
 import java.util.HashMap;

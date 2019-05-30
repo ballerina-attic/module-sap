@@ -80,7 +80,7 @@ public class Start extends BlockingNativeCallableUnit {
             jcoServer.addServerStateChangedListener(stateListener);
             // Start the JCo server
             jcoServer.start();
-            console.println("JCo Server started...........");
+            console.println("JCo Server started");
         } else {
             JCoIDocServer jcoIDocServer = (JCoIDocServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
             IDocHandlerFactory iDocHandlerFactory = new IDocHandlerFactory(sapService, context);
@@ -92,7 +92,7 @@ public class Start extends BlockingNativeCallableUnit {
             jcoIDocServer.addServerStateChangedListener(stateListener);
             // Start the IDoc server
             jcoIDocServer.start();
-            console.println("IDoc Server started...........");
+            console.println("IDoc Server started");
         }
     }
 }

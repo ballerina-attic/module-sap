@@ -44,7 +44,6 @@ import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_SERVER_STRUCT_NA
 import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_TRANSPORT_NAME;
 import static org.ballerinalang.sap.utils.SapConstants.DESTINATION_CONFIG;
 import static org.ballerinalang.sap.utils.SapConstants.SERVER_CONFIG;
-import static org.ballerinalang.sap.utils.SapUtils.createError;
 
 /**
  * This is used to configure the properties of the destination and server, and create the RFC connection.
@@ -88,8 +87,6 @@ public class Init extends BlockingNativeCallableUnit {
                 serviceEndpoint.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoIDocServer);
                 serverConfig.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoIDocServer);
             } catch (JCoException e) {
-                context.setReturnValues(createError(context, "Could not get the IDoc server " + serverName +
-                        ": " + e.toString()));
                 throw new BallerinaException("Could not get the IDoc server " + serverName + ": " + e.toString());
             }
         } else {
@@ -98,9 +95,7 @@ public class Init extends BlockingNativeCallableUnit {
                 serviceEndpoint.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoServer);
                 serverConfig.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoServer);
             } catch (JCoException e) {
-                context.setReturnValues(createError(context, "Could not get the IDoc server " + serverName +
-                        ": " + e.toString()));
-                throw new BallerinaException("Could not get the IDoc server " + serverName + ": " + e.toString());
+                throw new BallerinaException("Could not get the Jco server " + serverName + ": " + e.toString());
             }
         }
         serviceEndpoint.addNativeData(CONSUMER_TRANSPORT_NAME, transportName);

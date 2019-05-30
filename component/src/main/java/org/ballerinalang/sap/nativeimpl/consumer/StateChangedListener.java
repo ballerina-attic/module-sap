@@ -36,11 +36,11 @@ public class StateChangedListener implements JCoServerStateChangedListener {
 
     private static Log log = LogFactory.getLog(Start.class);
     private static final PrintStream console = System.out;
+
     @Override
     public void serverStateChangeOccurred(JCoServer jCoServer, JCoServerState oldState, JCoServerState newState) {
 
-        String message =  "Server state changed from " + oldState.toString() + " to " + newState.toString()
-                + " on server with program id " + jCoServer.getProgramID();
-        console.println(SAP_SERVER_STATE + message);
+        console.println(SAP_SERVER_STATE + "Server state changed from " + oldState.toString() + " to "
+                + newState.toString() + " on server with program id " + jCoServer.getProgramID());
     }
 }

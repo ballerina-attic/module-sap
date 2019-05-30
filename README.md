@@ -159,7 +159,7 @@ The following example demonstrates how to receive an IDoc from a SAP instance.
 
 ```ballerina
 import wso2/sap;
-import ballerina/io;
+import ballerina/log;
 
 listener sap:Listener consumerEP = new ({
     transportName: "<The protocol name[idoc/bapi]>",
@@ -180,12 +180,12 @@ listener sap:Listener consumerEP = new ({
 service SapConsumerTest on consumerEP {
     // The `resource` registered to receive server messages
     resource function onMessage(xml idoc) {
-       io:println("Message received from SAP instance: ", idoc);
+       log:printInfo("Message received from SAP instance: " + idoc);
     }
 
     // The `resource` registered to receive server error messages
-    resource function onError(error err) {
-       io:println("Error: ", err.reason());
+    resource function onError(error e) {
+       log:printError("Error: ", err = e);
     }
 }
 ```
