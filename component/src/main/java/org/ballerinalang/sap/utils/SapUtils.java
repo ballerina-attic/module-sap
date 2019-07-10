@@ -274,9 +274,8 @@ public class SapUtils {
     public static void invokeOnBapiMessage(String output, Map<String, Resource> sapResource,
                                            CallableUnitCallback callback, Context context) {
         try {
-            Map<String, Object> properties = new HashMap<>();
             Resource onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
-            Executor.submit(onMessageResource, callback, properties, null, new BString(output));
+            Executor.submit(onMessageResource, callback, null, null, new BString(output));
         } catch (BallerinaConnectorException e) {
             SapUtils.invokeOnError(sapResource, callback, e.getMessage(), context);
         }
@@ -293,9 +292,8 @@ public class SapUtils {
     public static void invokeOnIdocMessage(BXML xml, Map<String, Resource> sapResource, CallableUnitCallback callback,
                                        Context context) {
         try {
-            Map<String, Object> properties = new HashMap<>();
             Resource onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
-            Executor.submit(onMessageResource, callback, properties, null, xml);
+            Executor.submit(onMessageResource, callback, null, null, xml);
         } catch (BallerinaConnectorException e) {
             SapUtils.invokeOnError(sapResource, callback, e.getMessage(), context);
         }

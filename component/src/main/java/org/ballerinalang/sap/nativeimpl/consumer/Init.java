@@ -87,7 +87,7 @@ public class Init extends BlockingNativeCallableUnit {
                 serviceEndpoint.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoIDocServer);
                 serverConfig.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoIDocServer);
             } catch (JCoException e) {
-                throw new BallerinaException("Could not get the IDoc server " + serverName + ": " + e.toString());
+                throw new BallerinaException("Could not get the IDoc server '" + serverName + "': " + e.toString());
             }
         } else {
             try {
@@ -95,7 +95,7 @@ public class Init extends BlockingNativeCallableUnit {
                 serviceEndpoint.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoServer);
                 serverConfig.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoServer);
             } catch (JCoException e) {
-                throw new BallerinaException("Could not get the Jco server " + serverName + ": " + e.toString());
+                throw new BallerinaException("Could not get the JCo server " + serverName + ": " + e.toString());
             }
         }
         serviceEndpoint.addNativeData(CONSUMER_TRANSPORT_NAME, transportName);

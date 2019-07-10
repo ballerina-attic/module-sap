@@ -37,7 +37,6 @@ import java.util.Map;
 public class ThrowableListener implements JCoServerErrorListener, JCoServerExceptionListener {
 
     private Context context;
-    private static Log log = LogFactory.getLog(ThrowableListener.class);
     private ResponseCallback callback;
     private Map<String, Resource> sapService;
 
@@ -50,16 +49,12 @@ public class ThrowableListener implements JCoServerErrorListener, JCoServerExcep
     @Override
     public void serverErrorOccurred(JCoServer server, String connectionId, JCoServerContextInfo serverCtx,
                                     Error error) {
-        String message = "Exception occurred on " + server.getProgramID() + " connection " + connectionId
-                + error.toString();
         SapUtils.invokeOnError(sapService, callback, error.getMessage(), context);
     }
 
     @Override
     public void serverExceptionOccurred(JCoServer server, String connectionId, JCoServerContextInfo serverCtx,
                                         Exception error) {
-        String message =  "Exception occurred on " + server.getProgramID() + " connection " + connectionId
-                + error.toString();
         SapUtils.invokeOnError(sapService, callback, error.getMessage(), context);
     }
 }
