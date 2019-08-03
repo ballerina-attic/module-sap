@@ -7,27 +7,20 @@ import org.apache.commons.logging.LogFactory;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
-import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.connector.api.BallerinaConnectorException;
 import org.ballerinalang.connector.api.Executor;
 import org.ballerinalang.connector.api.Resource;
 import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.model.values.BError;
-import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.codegen.ProgramFile;
+import org.ballerinalang.model.values.BXML;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.sap.utils.SapConstants.RESOURCE_ON_ERROR;
 import static org.ballerinalang.sap.utils.SapConstants.RESOURCE_ON_MESSAGE;
-import static org.ballerinalang.sap.utils.SapConstants.SAP_ERROR_CODE;
-import static org.ballerinalang.sap.utils.SapConstants.SAP_MESSAGE_OBJECT;
-import static org.ballerinalang.sap.utils.SapConstants.SAP_NATIVE_PACKAGE;
 
 /**
  * Utility class for SAP Connector Implementation.
@@ -260,53 +253,49 @@ public class SapUtils {
      * @param sapService that contains resource map
      * @param error      {@link BError} instance which contains the error details
      */
-    public static void invokeOnError(Map<String, Resource> sapService, CallableUnitCallback callback, String error) {
+    public static void invokeOnError(Map<String, Resource> sapService, CallableUnitCallback callback, String error,
+                                     Context context) {
         try {
             Resource errorResource = sapService.get(RESOURCE_ON_ERROR);
-            log.info("invokeOnError : " + sapService.get(RESOURCE_ON_ERROR).getName());
-            BValue[] params = getOnErrorResourceSignature(errorResource, error);
-            Executor.submit(errorResource, callback, null, null, params);
+            Executor.submit(errorResource, callback, null, null, createError(context, error));
         } catch (Throwable e) {
             log.error("Error while executing onError resource", e);
         }
     }
 
-    private static BValue[] getOnErrorResourceSignature(Resource errorResource, String msg) {
-        ProgramFile programFile = errorResource.getResourceInfo().getPackageInfo().getProgramFile();
-        BError error = createSapError(programFile, msg);
-        return new BValue[] { error };
-    }
-
     /**
-     * Creates an error message.
+     * Invoke the 'onMessage' resource.
      *
-     * @param programFile ProgramFile which is used
-     * @param errMsg      the cause for the error
-     * @return an error which will be propagated to ballerina user
+     * @param output      Required for the resource
+     * @param sapResource The resource
+     * @param callback    Callback to return the response values
+     * @param context     Current context instance
      */
-    private static BError createSapError(ProgramFile programFile, String errMsg) {
-        BMap<String, BValue> errorRecord = BLangConnectorSPIUtil
-                .createBStruct(programFile, SAP_NATIVE_PACKAGE, CONSUMER_STRUCT_NAME);
-        errorRecord.put("message", new BString(errMsg));
-        return BLangVMErrors.createError(SAP_ERROR_CODE, errorRecord);
+    public static void invokeOnBapiMessage(String output, Map<String, Resource> sapResource,
+                                           CallableUnitCallback callback, Context context) {
+        try {
+            Resource onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
+            Executor.submit(onMessageResource, callback, null, null, new BString(output));
+        } catch (BallerinaConnectorException e) {
+            SapUtils.invokeOnError(sapResource, callback, e.getMessage(), context);
+        }
     }
 
     /**
      * Invoke the 'onMessage' resource.
      *
-     * @param output The output
+     * @param xml           Required for the resource
+     * @param sapResource   The resource
+     * @param callback      Callback to return the response values
+     * @param context       Current context instance
      */
-    public static void invokeOnMessage(String output, Map<String, Resource> sapService, CallableUnitCallback callback) {
+    public static void invokeOnIdocMessage(BXML xml, Map<String, Resource> sapResource, CallableUnitCallback callback,
+                                       Context context) {
         try {
-            Map<String, Object> properties = new HashMap<>();
-            Resource onMessageResource = sapService.get(RESOURCE_ON_MESSAGE);
-            ProgramFile programFile = onMessageResource.getResourceInfo().getPackageInfo().getProgramFile();
-            BMap<String, BValue> consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile,
-                    SAP_NATIVE_PACKAGE, CONSUMER_STRUCT_NAME);
-            consumerStruct.addNativeData(SAP_MESSAGE_OBJECT, output);
-            Executor.submit(onMessageResource, callback, properties, null, consumerStruct);
+            Resource onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
+            Executor.submit(onMessageResource, callback, null, null, xml);
         } catch (BallerinaConnectorException e) {
-            SapUtils.invokeOnError(sapService, callback, e.getMessage());
+            SapUtils.invokeOnError(sapResource, callback, e.getMessage(), context);
         }
     }
 }

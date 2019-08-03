@@ -18,8 +18,8 @@
 public type Listener object {
     *AbstractListener;
 
-    private ConsumerServerConfig serverConfig = {};
-    private ConsumerDestinationConfig destinationConfig = {};
+    public ConsumerServerConfig serverConfig = {};
+    public ConsumerDestinationConfig destinationConfig = {};
 
     public function __init(ConsumerServerConfig servConfig, ConsumerDestinationConfig destConfig) {
         self.serverConfig = servConfig;
@@ -38,17 +38,17 @@ public type Listener object {
         return self.stop();
     }
 
-    public function __attach(service s, map<any> annotationData) returns error? {
-        return self.register(s, annotationData);
+    public function __attach(service s, string? name = ()) returns error? {
+        return self.register(s, name);
     }
 
-    extern function register(service serviceType, map<any> annotationData) returns error?;
+    function register(service serviceType, string? name) returns error? = external;
 
-    extern function start() returns error?;
+    function start() returns error? = external;
 
-    extern function stop() returns error?;
+    function stop() returns error? = external;
 
-    extern function init(ConsumerServerConfig servConfig, ConsumerDestinationConfig destConfig) returns error?;
+    function init(ConsumerServerConfig servConfig, ConsumerDestinationConfig destConfig) returns error? = external;
 };
 
 # The server properties configuration of SAP.
@@ -56,95 +56,94 @@ public type Listener object {
 # + transportName - Name of the protocol
 # + serverName - Name of the server configuration. This needs to be the same name that is provided in the SAP configuration.
 # + gwhost - Gateway host on which the server should be registered
-# + progId - The program ID with which the registration is done
-# + gwServ - Gateway service( i.e., the port on which a registration can be done)
-# + connectionCount - The number of connections that should be registered with the gateway. default: 1
+# + progid - The program ID with which the registration is done
+# + gwserv - Gateway service( i.e., the port on which a registration can be done)
+# + connectioncount - The number of connections that should be registered with the gateway. default: 1
 # + trace - Enable/disable the RFC trace (1 or 0 [default])
-# + repositoryDestination - Name of the .dest file. For example, if the .dest file is SAPSYS01.dest,
-#                            set this to SAPSYS01.
+# + repositorydestination - Name of the repository.
 # + unicode - Determines whether you connect in Unicode mode or not (true, false)
-# + sncMyName - SNC name of your server. This overrides the default SNC name. Typically, something like
+# + sncmyname - SNC name of your server. This overrides the default SNC name. Typically, something like
 #   p:CN=JCoServer, O=ACompany, C=EN
 # + sncqop - SNC level of security, 1 to 9
-# + sncLib - Path to the library, which provides the SNC service.
+# + snclib - Path to the library, which provides the SNC service.
 public type ConsumerServerConfig record {
     Transport transportName = "idoc";
     string serverName = "";
-    string gwServ = "";
-    string progId = "";
-    string repositoryDestination = "";
+    string gwserv = "";
+    string progid = "";
+    string repositorydestination = "";
     string gwhost = "";
-    int connectionCount = 1;
+    int connectioncount = 1;
     Value unicode = 0;
-    string? sncMyName = "";
+    string? sncmyname = "";
     Value trace = 1;
     SncQOP sncqop = 8;
-    string? sncLib = "";
+    string? snclib = "";
 };
 
 #The destination properties configuration of SAP.
 #
-# + sapClient - SAP Client
-# + userName - Username to log in to SAP
+# + ^"client" - SAP Client
+# + username - Username to log in to SAP
 # + password - Password to log in to SAP
 # + language - Language preferred by the user who is logged in
 # + sysnr - SAP system number
-# + aliasUser - Alias of the user who is logged in.
-# + mySapsso2 - The SAP cookie version 2 of the login ticket that should be used
+# + aliasuser - Alias of the user who is logged in.
+# + mysapsso2 - The SAP cookie version 2 of the login ticket that should be used
 # + x509Cert - The X509-certificate of the login ticket
 # + extiddata - External identification login data of the user
 # + extidtype - Type of the external identification login data of the user
-# + sapRouter - SAP router String to use for a system that is protected by a firewall
-# + gwHost - Gateway host
-# + asHost - SAP application server
-# + msHost - SAP message server
-# + msServ - SAP message server port to use instead of the default SAP message server system ID
-# + gwServ - Gateway service
-# + r3Name - System ID of the SAP system
-# + serverGroup - The group of application servers
-# + useSapGui - Start a SAP GUI and associate with the connection. (0 - do not start [default], 1 start GUI,
+# + saprouter - SAP router String to use for a system that is protected by a firewall
+# + gwhost - Gateway host
+# + ashost - SAP application server
+# + mshost - SAP message server
+# + msserv - SAP message server port to use instead of the default SAP message server system ID
+# + gwserv - Gateway service
+# + r3name - System ID of the SAP system
+# + servergroup - The group of application servers
+# + usesapgui - Start a SAP GUI and associate with the connection. (0 - do not start [default], 1 start GUI,
 #   2 start GUI and hide if not used)
-# + codePage  - Initial login codepage in SAP notation
+# + codepage  - Initial login codepage in SAP notation
 # + getsso2  - Whether to get an SSO ticket after logging in or not (1 or 0 [default])
-# + sncPartnerName - SNC partner. E.g., p:CN=R3, O=XYZ-INC, C=EN
-# + sncMode - Whether the Secure Network Connection (SNC) mode in on (1) or off (0 [default])
+# + sncpartnername - SNC partner. E.g., p:CN=R3, O=XYZ-INC, C=EN
+# + sncmode - Whether the Secure Network Connection (SNC) mode in on (1) or off (0 [default])
 # + sncqop - SNC level of security (1-9, default:8)
-# + sncmyName - SNC name. Overrides default SNC partner
-# + sncLib - Path to the library which provides the SNC service
+# + sncmyname - SNC name. Overrides default SNC partner
+# + snclib - Path to the library which provides the SNC service
 #   Valid values are true (yes, default) and false (no)
-# + tpName - The program ID of the external server program
-# + tpHost - The host of the external server program
-# + hostType - Type of the remote host (3=R/3, E=External)
+# + tpname - The program ID of the external server program
+# + tphost - The host of the external server program
+# + hosttype - Type of the remote host (3=R/3, E=External)
 # + dest - The R/2 destination
-public type ConsumerDestinationConfig record {
-    string sapClient = "";
-    string userName = "";
+public type ConsumerDestinationConfig record {|
+    string ^"client" = "";
+    string username = "";
     string password = "";
     string language = "";
-    string asHost = "";
+    string ashost = "";
     string sysnr = "";
-    string? mySapsso2 = "";
-    string? aliasUser = "";
+    string? mysapsso2 = "";
+    string? aliasuser = "";
     string? extiddata = "";
     string? extidtype = "";
-    string? sapRouter = "";
+    string? saprouter = "";
     string? x509Cert = "";
-    string? gwHost = "";
-    string? msHost = "";
-    string? msServ = "";
-    string? gwServ = "";
-    string? r3Name = "";
-    string? serverGroup = "";
-    Value useSapGui = 0;
-    string? codePage = "";
+    string? gwhost = "";
+    string? mshost = "";
+    string? msserv = "";
+    string? gwserv = "";
+    string? r3name = "";
+    string? servergroup = "";
+    Value usesapgui = 0;
+    string? codepage = "";
     Value getsso2 = 0;
-    string? sncPartnerName = "";
-    Value sncMode = 0;
+    string? sncpartnername = "";
+    Value sncmode = 0;
     SncQOP sncqop = 8;
-    string? sncmyName = "";
-    string? sncLib = "";
-    string? tpName = "";
-    string? tpHost = "";
-    string? hostType = "";
+    string? sncmyname = "";
+    string? snclib = "";
+    string? tpname = "";
+    string? tphost = "";
+    string? hosttype = "";
     string? dest = "";
-};
+|};

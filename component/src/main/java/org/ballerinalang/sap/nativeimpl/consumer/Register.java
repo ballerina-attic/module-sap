@@ -54,7 +54,7 @@ public class Register extends BlockingNativeCallableUnit {
 
     /**
      * Add the resources to the Struct
-     * @param context
+     * @param context Current context instance
      */
     @Override
     public void execute(Context context) {

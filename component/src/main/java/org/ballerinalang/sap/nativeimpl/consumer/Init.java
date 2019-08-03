@@ -20,6 +20,7 @@ package org.ballerinalang.sap.nativeimpl.consumer;
 
 import com.sap.conn.idoc.jco.JCoIDoc;
 import com.sap.conn.idoc.jco.JCoIDocServer;
+import com.sap.conn.jco.JCoException;
 import com.sap.conn.jco.ext.Environment;
 import com.sap.conn.jco.server.JCoServer;
 import com.sap.conn.jco.server.JCoServerFactory;
@@ -85,18 +86,16 @@ public class Init extends BlockingNativeCallableUnit {
                 JCoIDocServer jcoIDocServer = JCoIDoc.getServer(serverName);
                 serviceEndpoint.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoIDocServer);
                 serverConfig.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoIDocServer);
-            } catch (Exception e) {
-                throw new BallerinaException("Could not get the IDoc server " + serverName + " , because of "
-                        + e.toString());
+            } catch (JCoException e) {
+                throw new BallerinaException("Could not get the IDoc server '" + serverName + "': " + e.toString());
             }
         } else {
             try {
                 JCoServer jcoServer = JCoServerFactory.getServer(serverName);
                 serviceEndpoint.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoServer);
                 serverConfig.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, jcoServer);
-            } catch (Exception e) {
-                throw new BallerinaException("Could not get the IDoc server " + serverName + " , because of "
-                        + e.toString());
+            } catch (JCoException e) {
+                throw new BallerinaException("Could not get the JCo server " + serverName + ": " + e.toString());
             }
         }
         serviceEndpoint.addNativeData(CONSUMER_TRANSPORT_NAME, transportName);

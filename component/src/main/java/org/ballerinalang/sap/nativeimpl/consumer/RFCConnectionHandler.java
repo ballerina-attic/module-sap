@@ -23,6 +23,7 @@ import com.sap.conn.jco.server.JCoServerContext;
 import com.sap.conn.jco.server.JCoServerFunctionHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.connector.api.Resource;
 import org.ballerinalang.model.values.BError;
@@ -42,10 +43,12 @@ public class RFCConnectionHandler implements JCoServerFunctionHandler {
     private static final Log log = LogFactory.getLog(RFCConnectionHandler.class);
     private ResponseCallback callback;
     private Map<String, Resource> sapResource;
+    private Context context;
 
-    RFCConnectionHandler(Map<String, Resource> sapService) {
+    RFCConnectionHandler(Map<String, Resource> sapService, Context context) {
         this.sapResource = sapService;
         callback = new ResponseCallback();
+        this.context = context;
         log.info("......JCo server function handler is created.");
     }
 
@@ -61,7 +64,7 @@ public class RFCConnectionHandler implements JCoServerFunctionHandler {
         jCoFunction.getExportParameterList().setValue("ECHOTEXT", jCoFunction.getImportParameterList()
                 .getString("REQUTEXT"));
         String output = jCoFunction.getImportParameterList().getString("REQUTEXT");
-        SapUtils.invokeOnMessage(output, sapResource, callback);
+        SapUtils.invokeOnBapiMessage(output, sapResource, callback, context);
     }
 
     private static class ResponseCallback implements CallableUnitCallback {

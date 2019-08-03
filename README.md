@@ -39,8 +39,8 @@ Follow the steps below to build the Ballerina SAP endpoint from the source code:
 
 1. Get a clone or download [the source](https://github.com/wso2-ballerina/module-sap).
 2. Create a lib folder in the module-sap directory.
-3. Download the sapidoc3.jar and sapjco3.jar middleware libraries from the SAP support portal and copy those 
-   libraries to the module-sap/lib directory.
+   
+3. Download the sapidoc3.jar and sapjco3.jar middleware libraries from the SAP support portal and copy those libraries to the module-sap/lib directory.
 4. Navigate to the folder `module-sap` directory and execute the following Maven command:
     
         mvn clean install
@@ -87,13 +87,13 @@ import wso2/sap;
 import ballerina/io;
 
 sap:ProducerConfig producerConfigs = {
-    destinationName:"<The SAP gateway name>",
-    sapClient:"<SAP client, for example, 001>",
-    userName:"<The user logon>",
-    password:"<The logon password>",
-    asHost:"<The R/3 application server>",
-    sysnr:"<SAP system number, for example, 01>",
-    language:"<The logon language>"
+    destinationName: "<The SAP gateway name>",
+    ^"client: "<SAP client, for example, 001>",
+    username: "<The user logon>",
+    password: "<The logon password>",
+    ashost: "<The R/3 application server>",
+    sysnr: "<SAP system number, for example, 01>",
+    language: "<The logon language>"
 };
 
 sap:Producer sapProducer = new(producerConfigs);
@@ -121,7 +121,7 @@ The following example demonstrates how to publish a BAPI to SAP.
 ```ballerina
 xml bapi = xml `<BAPI_DOCUMENT_GETLIST></BAPI_DOCUMENT_GETLIST>`;
 public function main() {
-    var result = sapProducer->sendBapiMessage(bapi , false, false);
+    var result = sapProducer->sendBapiMessage(bapi, false, false);
     if (result is error) {
         io:println("Error: ", result.reason());
     } else {
@@ -155,34 +155,37 @@ public function main() {
 
 ### SAP Consumer
 
+The following example demonstrates how to receive an IDoc from a SAP instance.
+
 ```ballerina
 import wso2/sap;
-import ballerina/io;
+import ballerina/log;
 
 listener sap:Listener consumerEP = new ({
-    transportName:"<The protocol name[idoc/bapi]>",
-    serverName:"<Name of the server configuration>",
-    gwHost:"<Gateway host on which the server should be registered>",
-    progId:"<The program ID with which the registration is done>",
-    repositoryDestination:"<Name of the .dest file>",
-    gwServ:"<Gateway service>",
-    unicode:"<Determines whether or not you connect in unicodemode>"}, {
-    sapClient:"<SAP client, for example, 001>",
-    userName:"<The user logon>",
-    password:"<The logon password>",
-    asHost:"<The R/3 application server>",
-    sysnr:"<SAP system number, for example, 01>",
-    language:"<The logon language>"
+    transportName: "<The protocol name[idoc/bapi]>",
+    serverName: "<Name of the server configuration>",
+    gwhost: "<Gateway host on which the server should be registered>",
+    progid: "<The program ID with which the registration is done>",
+    repositorydestination: "<Name of the repository>",
+    gwserv: "<Gateway service>",
+    unicode: "<Determines whether or not you connect in unicodemode>"}, 
+    {
+    ^"client: "<SAP client, for example, 001>",
+    username: "<The user logon>",
+    password: "<The logon password>",
+    ashost: "<The R/3 application server>",
+    sysnr: "<SAP system number, for example, 01>",
+    language: "<The logon language>"
 });
 service SapConsumerTest on consumerEP {
     // The `resource` registered to receive server messages
-    resource function onMessage(string idoc) {
-        io:println("The message received from SAP instance : " + idoc);
+    resource function onMessage(xml idoc) {
+       log:printInfo("Message received from SAP instance: " + idoc);
     }
 
     // The `resource` registered to receive server error messages
-    resource function onError(error err) {
-        io:println("Error from Connector: " + err.reason());
+    resource function onError(error e) {
+       log:printError("Error: ", err = e);
     }
 }
 ```

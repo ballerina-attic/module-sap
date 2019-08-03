@@ -17,13 +17,13 @@
 import wso2/sap;
 
 sap:ProducerConfig producerConfigs = {
-    destinationName:"The name of the SAP gateway",
-    logonClient:"The SAP client ID (usually a number) used to connect to the SAP system",
-    userName:"Username of an authorized SAP user",
-    password:"Password credential of an authorized SAP user",
-    asHost:"The SAP endpoint",
-    sysnr:"System number used to connect to the SAP system",
-    language:"The language to use for the SAP connection. For example, en for English"
+    destinationName: "<The SAP gateway name>",
+    ^"client: "<SAP client, for example, 001>",
+    username: "<The user logon>",
+    password: "<The logon password>",
+    ashost: "<The R/3 application server>",
+    sysnr: "<SAP system number, for example, 01>",
+    language: "<The logon language>"
 };
 
 xml bapi = xml `<BAPI_DOCUMENT_GETLIST></BAPI_DOCUMENT_GETLIST>`;

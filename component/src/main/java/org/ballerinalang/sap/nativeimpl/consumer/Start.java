@@ -34,6 +34,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.sap.utils.SapConstants;
 
+import java.io.PrintStream;
 import java.util.Map;
 
 import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_SERVER_CONNECTOR_NAME;
@@ -57,53 +58,41 @@ import static org.ballerinalang.sap.utils.SapConstants.SAP_RESOURCE;
 public class Start extends BlockingNativeCallableUnit {
 
     private static Log log = LogFactory.getLog(Start.class);
+    private static final PrintStream console = System.out;
 
     @Override
     public void execute(Context context) {
         Struct consumerStruct = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
         Map<String, Resource> sapService = (Map<String, Resource>) consumerStruct.getNativeData(SAP_RESOURCE);
         String transportName = (String) consumerStruct.getNativeData(CONSUMER_TRANSPORT_NAME);
-
+        StateChangedListener stateListener = new StateChangedListener();
+        ThrowableListener listener = new ThrowableListener(context, sapService);
         if (transportName.equalsIgnoreCase(SapConstants.SAP_BAPI_PROTOCOL_NAME)) {
             FunctionHandlerFactory factory = new FunctionHandlerFactory();
-            JCoServerFunctionHandler rfcConnectionHandler = new RFCConnectionHandler(sapService);
+            JCoServerFunctionHandler rfcConnectionHandler = new RFCConnectionHandler(sapService, context);
             factory.registerGenericHandler(rfcConnectionHandler);
             JCoServer jcoServer = (JCoServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
             //Configure the Jco Server
             jcoServer.setCallHandlerFactory(factory);
             jcoServer.setTIDHandler(new CustomServerTIDHandler());
-            jcoServer.addServerExceptionListener((server, connectionId, serverCtx, error) ->
-                    log.info("Exception occured on " + server.getProgramID() + " connection " + connectionId
-                            + error.toString()));
-            jcoServer.addServerExceptionListener((server, connectionId, serverCtx, error) ->
-                    log.info("Exception occured on " + server.getProgramID() + " connection " + connectionId
-                            + error.toString()));
-            jcoServer.addServerStateChangedListener((server, oldState, newState) ->
-                    log.info("Server state changed from " + oldState.toString() + " to " + newState.toString()
-                            + " on server with program id " + server.getProgramID()));
-            log.info("JCo Server start...........");
+            jcoServer.addServerErrorListener(listener);
+            jcoServer.addServerExceptionListener(listener);
+            jcoServer.addServerStateChangedListener(stateListener);
             // Start the JCo server
             jcoServer.start();
+            console.println("JCo Server started");
         } else {
             JCoIDocServer jcoIDocServer = (JCoIDocServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
-            IDocHandlerFactory iDocHandlerFactory = new IDocHandlerFactory(sapService);
+            IDocHandlerFactory iDocHandlerFactory = new IDocHandlerFactory(sapService, context);
             //Configure the IDoc Server
             jcoIDocServer.setIDocHandlerFactory(iDocHandlerFactory);
             jcoIDocServer.setTIDHandler(new CustomServerTIDHandler());
-            jcoIDocServer.addServerExceptionListener((server, connectionId, serverCtx, error) ->
-                    log.info("Exception occured on " + server.getProgramID() + " connection " + connectionId
-                            + error.toString()));
-            jcoIDocServer.addServerExceptionListener((server, connectionId, serverCtx, error) ->
-                    log.info("Exception occured on " + server.getProgramID() + " connection " + connectionId
-                            + error.toString()));
-            jcoIDocServer.addServerStateChangedListener((server, oldState, newState) ->
-                    log.info("Server state changed from " + oldState.toString() + " to " + newState.toString()
-                            + " on server with program id " + server.getProgramID()));
-
-            log.info("IDoc Server start...........");
+            jcoIDocServer.addServerErrorListener(listener);
+            jcoIDocServer.addServerExceptionListener(listener);
+            jcoIDocServer.addServerStateChangedListener(stateListener);
             // Start the IDoc server
             jcoIDocServer.start();
+            console.println("IDoc Server started");
         }
-        context.setReturnValues();
     }
 }
