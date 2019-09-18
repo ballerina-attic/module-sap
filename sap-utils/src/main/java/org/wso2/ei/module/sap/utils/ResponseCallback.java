@@ -16,14 +16,14 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.utils;
+package org.wso2.ei.module.sap.utils;
 
-import org.ballerinalang.bre.bvm.CallableUnitCallback;
-import org.ballerinalang.model.values.BError;
+import org.ballerinalang.jvm.values.ErrorValue;
+import org.ballerinalang.jvm.values.connector.CallableUnitCallback;
 
 /**
- *  This represents a callback to report back a success or a
- *  failure state back to the originator.
+ * This represents a callback to report back a success or a
+ * failure state back to the originator.
  */
 public class ResponseCallback implements CallableUnitCallback {
 
@@ -41,7 +41,7 @@ public class ResponseCallback implements CallableUnitCallback {
      *
      * @param error the error to be reported when the operation failed
      */
-    public void notifyFailure(BError error) {
+    public void notifyFailure(ErrorValue error) {
         // Skip this
     }
 }

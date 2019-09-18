@@ -16,18 +16,15 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.consumer;
+package org.wso2.ei.module.sap.consumer;
 
 import com.sap.conn.jco.server.JCoServer;
 import com.sap.conn.jco.server.JCoServerContextInfo;
 import com.sap.conn.jco.server.JCoServerErrorListener;
 import com.sap.conn.jco.server.JCoServerExceptionListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.Resource;
-import org.ballerinalang.sap.utils.ResponseCallback;
-import org.ballerinalang.sap.utils.SapUtils;
+import org.ballerinalang.jvm.types.AttachedFunction;
+import org.wso2.ei.module.sap.utils.ResponseCallback;
+import org.wso2.ei.module.sap.utils.SapUtils;
 
 import java.util.Map;
 
@@ -36,12 +33,11 @@ import java.util.Map;
  */
 public class ThrowableListener implements JCoServerErrorListener, JCoServerExceptionListener {
 
-    private Context context;
     private ResponseCallback callback;
-    private Map<String, Resource> sapService;
+    private Map<String, AttachedFunction> sapService;
 
-    ThrowableListener(Context context, Map<String, Resource> sapService) {
-        this.context = context;
+    ThrowableListener(Map<String, AttachedFunction> sapService) {
+
         callback = new ResponseCallback();
         this.sapService = sapService;
     }
@@ -49,12 +45,14 @@ public class ThrowableListener implements JCoServerErrorListener, JCoServerExcep
     @Override
     public void serverErrorOccurred(JCoServer server, String connectionId, JCoServerContextInfo serverCtx,
                                     Error error) {
-        SapUtils.invokeOnError(sapService, callback, error.getMessage(), context);
+
+        SapUtils.invokeOnError(sapService, callback, error.getMessage());
     }
 
     @Override
     public void serverExceptionOccurred(JCoServer server, String connectionId, JCoServerContextInfo serverCtx,
                                         Exception error) {
-        SapUtils.invokeOnError(sapService, callback, error.getMessage(), context);
+
+        SapUtils.invokeOnError(sapService, callback, error.getMessage());
     }
 }

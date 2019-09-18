@@ -1,4 +1,3 @@
-//
 // Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
@@ -19,8 +18,8 @@
 //String constants
 public const TRANSPORT_IDOC = "idoc";
 public const TRANSPORT_BAPI = "bapi";
-public type Transport TRANSPORT_IDOC|TRANSPORT_BAPI;
-public type SncQOP 0|1|2|3|4|5|6|7|8|9;
-public type StartSAPGUI 0|1|2;
-public type Value 0|1;
+public type Transport TRANSPORT_IDOC | TRANSPORT_BAPI;
+public type SncQOP 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+public type StartSAPGUI 0 | 1 | 2;
+public type Value 0 | 1;
 

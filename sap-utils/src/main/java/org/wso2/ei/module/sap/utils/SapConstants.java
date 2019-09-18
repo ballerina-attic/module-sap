@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.utils;
+package org.wso2.ei.module.sap.utils;
 
 import javax.xml.namespace.QName;
 
@@ -26,6 +26,7 @@ import javax.xml.namespace.QName;
 public class SapConstants {
 
     private SapConstants() {
+
     }
 
     public static final String PATH_SEPARATOR = "/";
@@ -67,7 +68,7 @@ public class SapConstants {
     public static final QName NAME_Q = new QName("name");
 
     /**
-     *ID of the RFC configuration.
+     * ID of the RFC configuration.
      */
     public static final QName ID_Q = new QName("id");
 
@@ -99,6 +100,7 @@ public class SapConstants {
      * Server configuration constants.
      */
     public static class Serverproperties {
+
         public static final String JCO_GWHOST = "gwhost";
         public static final String JCO_PROGID = "progid";
         public static final String JCO_REPOSITORY_DEST = "repositorydestination";
@@ -120,7 +122,7 @@ public class SapConstants {
 
         public static final String JCO_MSHOST = "mshost";
         public static final String JCO_R3NAME = "r3name";
-        public static final String JCO_CLIENT = "client";
+        public static final String JCO_CLIENT = "sapclient";
         public static final String JCO_USER = "username";
         public static final String JCO_PASSWD = "password";
         public static final String JCO_GROUP = "servergroup";

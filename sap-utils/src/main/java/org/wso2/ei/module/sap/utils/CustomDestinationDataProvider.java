@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.consumer;
+package org.wso2.ei.module.sap.utils;
 
 import com.sap.conn.jco.ext.DataProviderException;
 import com.sap.conn.jco.ext.DestinationDataEventListener;
@@ -34,19 +34,22 @@ public class CustomDestinationDataProvider implements DestinationDataProvider {
     private Properties connectionProp;
 
     public CustomDestinationDataProvider(Properties properties) {
+
         connectionProp = properties;
     }
 
     /**
      * Return the properties of the destination.
+     *
      * @param destName Name of the destination
      * @return Properties of the destination
      */
     @Override
     public Properties getDestinationProperties(String destName) {
+
         if (connectionProp != null && connectionProp.isEmpty()) {
-                throw new BallerinaException("Destination configuration is incorrect:"
-                        + DataProviderException.Reason.INVALID_CONFIGURATION);
+            throw new BallerinaException("Destination configuration is incorrect:"
+                    + DataProviderException.Reason.INVALID_CONFIGURATION);
         } else {
             return connectionProp;
         }
@@ -56,14 +59,17 @@ public class CustomDestinationDataProvider implements DestinationDataProvider {
      * An implementation supporting events has to retain the eventListener instance provided
      * by the JCo runtime. This listener instance shall be used to notify the JCo runtime
      * about all changes in destination configurations.
+     *
      * @param dataEventListener The destination data event listener
      */
     @Override
     public void setDestinationDataEventListener(DestinationDataEventListener dataEventListener) {
+
     }
 
     @Override
     public boolean supportsEvents() {
+
         return true;
     }
 }

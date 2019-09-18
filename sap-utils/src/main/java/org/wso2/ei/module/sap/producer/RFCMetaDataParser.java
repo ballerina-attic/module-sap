@@ -16,48 +16,50 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.producer;
+package org.wso2.ei.module.sap.producer;
 
 import com.sap.conn.jco.JCoField;
 import com.sap.conn.jco.JCoFunction;
 import com.sap.conn.jco.JCoStructure;
 import com.sap.conn.jco.JCoTable;
 import org.apache.axiom.om.OMElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.sap.utils.SapConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.SapConstants;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.Iterator;
 
-import static org.ballerinalang.sap.utils.SapConstants.FIELD;
-import static org.ballerinalang.sap.utils.SapConstants.IMPORT;
-import static org.ballerinalang.sap.utils.SapConstants.STRUCTURE;
-import static org.ballerinalang.sap.utils.SapConstants.TABLE;
-import static org.ballerinalang.sap.utils.SapConstants.TABLES;
+import static org.wso2.ei.module.sap.utils.SapConstants.FIELD;
+import static org.wso2.ei.module.sap.utils.SapConstants.IMPORT;
+import static org.wso2.ei.module.sap.utils.SapConstants.STRUCTURE;
+import static org.wso2.ei.module.sap.utils.SapConstants.TABLE;
+import static org.wso2.ei.module.sap.utils.SapConstants.TABLES;
 
-/** This contains the required methods that can be used to parse a
+/**
+ * This contains the required methods that can be used to parse a
  * meta data description of a BAPI/RFC call.
  * Thus, the BNF grammar of the metadata would look like below:
- *  BAPI Function   -> import | tables | both
- *  import    -> structure | field | both
- *  structure -> 1 or more fields
- *  tables    -> 1 or more table
- *  table     -> row
- *  row       -> 1 or more fields
- *  field     -> name and value
- *
+ * BAPI Function   -> import | tables | both
+ * import    -> structure | field | both
+ * structure -> 1 or more fields
+ * tables    -> 1 or more table
+ * table     -> row
+ * row       -> 1 or more fields
+ * field     -> name and value
  */
 public class RFCMetaDataParser {
 
-    private static Log log = LogFactory.getLog(RFCMetaDataParser.class);
+    private static Logger log = LoggerFactory.getLogger("ballerina");
 
     /**
      * Process the document.
+     *
      * @param document The document node
      * @param function The RFC function to be executed
      */
     static void processMetaDataDocument(OMElement document, JCoFunction function) {
+
         Iterator itr = document.getChildElements();
         while (itr.hasNext()) {
             OMElement childElement = (OMElement) itr.next();
@@ -67,10 +69,12 @@ public class RFCMetaDataParser {
 
     /**
      * Process every element in the document.
-     * @param element The OMElement
+     *
+     * @param element  The OMElement
      * @param function The RFC function to be executed.
      */
     private static void processElement(OMElement element, JCoFunction function) {
+
         String qname = element.getQName().toString();
         if (qname != null) {
             if (qname.equals(IMPORT)) {
@@ -86,10 +90,12 @@ public class RFCMetaDataParser {
 
     /**
      * Process the import function.
-     * @param element The OMElement
+     *
+     * @param element  The OMElement
      * @param function The RFC function to be executed
      */
     private static void processImport(OMElement element, JCoFunction function) {
+
         Iterator itr = element.getChildElements();
         while (itr.hasNext()) {
             OMElement childElement = (OMElement) itr.next();
@@ -111,16 +117,18 @@ public class RFCMetaDataParser {
 
     /**
      * Process the structure under the import function.
-     * @param element The OMElement
-     * @param function The RFC function to be executed
+     *
+     * @param element    The OMElement
+     * @param function   The RFC function to be executed
      * @param strcutName Name of the structure
      */
     private static void processStructure(OMElement element, JCoFunction function, String strcutName) {
+
         if (strcutName == null) {
             throw new BallerinaException("A structure should have a name!");
         }
-        JCoStructure jcoStrcture = function.getImportParameterList().getStructure(strcutName);
-        if (jcoStrcture != null) {
+        JCoStructure jcoStructure = function.getImportParameterList().getStructure(strcutName);
+        if (jcoStructure != null) {
             Iterator itr = element.getChildElements();
             boolean isRecordFound = false;
             while (itr.hasNext()) {
@@ -129,7 +137,7 @@ public class RFCMetaDataParser {
                 if (qname.equals(FIELD)) {
                     String fieldName = childElement.getAttributeValue(SapConstants.NAME_Q);
                     String fieldValue = childElement.getText();
-                    for (JCoField field : jcoStrcture) {
+                    for (JCoField field : jcoStructure) {
                         if (fieldName != null && fieldName.equals(field.getName())) {
                             isRecordFound = true;
                             field.setValue(fieldValue);
@@ -153,11 +161,13 @@ public class RFCMetaDataParser {
 
     /**
      * Process the field.
-     * @param element The OMElement
-     * @param function The RFC function to execute
+     *
+     * @param element   The OMElement
+     * @param function  The RFC function to execute
      * @param fieldName The field name
      */
     private static void processField(OMElement element, JCoFunction function, String fieldName) {
+
         if (fieldName == null) {
             throw new BallerinaException("A field should have a name!");
         }
@@ -169,10 +179,12 @@ public class RFCMetaDataParser {
 
     /**
      * Process the tables.
-     * @param element The OMElement
+     *
+     * @param element  The OMElement
      * @param function The RFC function to be execute
      */
     private static void processTables(OMElement element, JCoFunction function) {
+
         Iterator itr = element.getChildElements();
         while (itr.hasNext()) {
             OMElement childElement = (OMElement) itr.next();
@@ -182,17 +194,19 @@ public class RFCMetaDataParser {
                 processTable(childElement, function, tableName);
             } else {
                 log.warn("Invalid meta data type element found : " + qname + " .This meta data " +
-                            "type will be ignored");
+                        "type will be ignored");
             }
         }
     }
 
     /**
      * Process the table
-     * @param element The OMElement
+     *
+     * @param element  The OMElement
      * @param function The RFC function to execute
      */
     private static void processTable(OMElement element, JCoFunction function, String tableName) {
+
         JCoTable inputTable = function.getTableParameterList().getTable(tableName);
         if (inputTable == null) {
             throw new BallerinaException("Input table :" + tableName + " does not exist");
@@ -206,18 +220,20 @@ public class RFCMetaDataParser {
                 processRow(childElement, inputTable, id);
             } else {
                 log.warn("Invalid meta data type element found : " + qname + " .This meta data " +
-                            "type will be ignored");
+                        "type will be ignored");
             }
         }
     }
 
     /**
      * Process the table.
+     *
      * @param element The OMElement
-     * @param table The RFC function to be executed
-     * @param id The ID of the row
+     * @param table   The RFC function to be executed
+     * @param id      The ID of the row
      */
     private static void processRow(OMElement element, JCoTable table, String id) {
+
         int rowId;
         try {
             rowId = Integer.parseInt(id);
@@ -247,10 +263,12 @@ public class RFCMetaDataParser {
 
     /**
      * Process the field.
+     *
      * @param element The OMElement
-     * @param table The RFC function to be executed
+     * @param table   The RFC function to be executed
      */
     private static void processField(OMElement element, JCoTable table) {
+
         String fieldName = element.getAttributeValue(SapConstants.NAME_Q);
         String fieldValue = element.getText();
         if (fieldName == null) {

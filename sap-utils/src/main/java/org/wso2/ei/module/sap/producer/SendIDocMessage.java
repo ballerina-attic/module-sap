@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.producer;
+package org.wso2.ei.module.sap.producer;
 
 import com.sap.conn.idoc.IDocDocumentList;
 import com.sap.conn.idoc.IDocFactory;
@@ -26,43 +26,27 @@ import com.sap.conn.idoc.IDocXMLProcessor;
 import com.sap.conn.idoc.jco.JCoIDoc;
 import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoException;
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
-import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.sap.utils.SapConstants;
+import org.ballerinalang.jvm.values.MapValue;
+import org.ballerinalang.jvm.values.ObjectValue;
+import org.ballerinalang.jvm.values.XMLValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.BallerinaSapException;
+import org.wso2.ei.module.sap.utils.SapConstants;
 
-import static org.ballerinalang.sap.utils.SapConstants.FULL_PACKAGE_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.NATIVE_PRODUCER;
-import static org.ballerinalang.sap.utils.SapConstants.ORG_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.PRODUCER_STRUCT_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.SAP_NATIVE_PACKAGE;
-import static org.ballerinalang.sap.utils.SapUtils.createError;
+import static org.wso2.ei.module.sap.utils.SapConstants.NATIVE_PRODUCER;
 
-/**
- * {@code Send} Send the IDoc message to the  SAP instance.
- */
-@BallerinaFunction(
-    orgName = ORG_NAME,
-    packageName = FULL_PACKAGE_NAME,
-    functionName = "sendIdocMessage",
-    receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
-            structPackage = SAP_NATIVE_PACKAGE)
-)
-public class SendIDocMessage extends BlockingNativeCallableUnit {
+public class SendIDocMessage {
 
-    @Override
-    public void execute(Context context) {
-        String idocVersion = String.valueOf(context.getIntArgument(0));
-        String content = String.valueOf(context.getRefArgument(1));
-        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
-        BMap producerMap = (BMap) producerConnector.get("producerHolder");
-        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
-        JCoDestination destination = (JCoDestination) producerStruct.getNativeData(NATIVE_PRODUCER);
+    private static Logger log = LoggerFactory.getLogger("ballerina");
+
+    public static String sendIdocMessage(ObjectValue producer, int idocVersion1, XMLValue content1)
+            throws BallerinaSapException {
+
+        String idocVersion = String.valueOf(idocVersion1);
+        String content = String.valueOf(content1);
+        MapValue producerMap = (MapValue) producer.get("producerConfig");
+        JCoDestination destination = (JCoDestination) producerMap.getNativeData(NATIVE_PRODUCER);
         char setIdocVersion;
         switch (idocVersion) {
             case SapConstants.SAP_IDOC_VERSION_2:
@@ -79,22 +63,17 @@ public class SendIDocMessage extends BlockingNativeCallableUnit {
             IDocFactory iDocFactory = JCoIDoc.getIDocFactory();
             IDocXMLProcessor processor = iDocFactory.getIDocXMLProcessor();
             IDocRepository iDocRepository = JCoIDoc.getIDocRepository(destination);
-
             IDocDocumentList iDocList = processor.parse(iDocRepository, content);
             String tid = destination.createTID();
+            log.info("TID for outbound IDOC message: " + tid);
             JCoIDoc.send(iDocList, setIdocVersion, destination, tid);
             destination.confirmTID(tid);
-            context.setReturnValues(new BString(tid));
+            return tid;
         } catch (JCoException e) {
-            context.setReturnValues(createError(context, "Failed to connect the SAP gateway : "
-                    + e.toString()));
-            createError(context, "Failed to connect the SAP gateway : "
-                    + e.toString());
+            throw new BallerinaSapException("Failed to connect the SAP gateway : ", e);
         } catch (IDocParseException e) {
-            context.setReturnValues(createError(context, "Error occurred when converting the data in " +
-                    "as string [" + content + " ]  " + "to IDocList." + e.toString()));
-            createError(context, "Error occurred when converting the data in " +
-                    "as string [" + content + " ]  " + "to IDocList." + e.toString());
+            throw new BallerinaSapException("Error occurred when converting the data in " +
+                    "as string [" + content + " ]  " + "to IDocList.", e);
         }
     }
 }

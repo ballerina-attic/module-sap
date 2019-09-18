@@ -1,3 +1,21 @@
 [project]
 org-name = "wso2"
-version = "0.0.0"
+version = "0.9.0"
+
+[platform]
+target = "java8"
+
+    [[platform.libraries]]
+    module = "sap"
+    path = "sap-utils/target/sap-utils-0.9.0.jar"
+    artifactId = "sap-utils"
+    version = "0.9.0"
+    groupId = "org.wso2.ei"
+
+    [[platform.libraries]]
+    module = "sapjco"
+    path = "lib/sapjco3.jar"
+
+    [[platform.libraries]]
+    module = "sapidoc"
+    path = "lib/sapidoc3.jar"

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.consumer;
+package org.wso2.ei.module.sap.consumer;
 
 import com.sap.conn.jco.ext.ServerDataEventListener;
 import com.sap.conn.jco.ext.ServerDataProvider;
@@ -26,23 +26,26 @@ import java.util.Properties;
 
 /**
  * The custom destination data provider implements the DestinationDataProvider and
- *  provides an implementation for at least the getDestinationProperties(String) function.
+ * provides an implementation for at least the getDestinationProperties(String) function.
  */
 public class CustomServerDataProvider implements ServerDataProvider {
 
     private Properties serverProp;
 
     CustomServerDataProvider(Properties properties) {
+
         serverProp = properties;
     }
 
     /**
      * Return the properties of the server
+     *
      * @param serverName Name of the server
      * @return Properties of the server
      */
     @Override
     public Properties getServerProperties(String serverName) {
+
         if (serverProp != null) {
             return serverProp;
         }
@@ -53,14 +56,17 @@ public class CustomServerDataProvider implements ServerDataProvider {
      * An implementation supporting events has to retain the eventListener instance provided
      * by the JCo runtime. This listener instance shall be used to notify the JCo runtime
      * about all changes in destination configurations.
+     *
      * @param dataEventListener The sever data event listener
      */
     @Override
     public void setServerDataEventListener(ServerDataEventListener dataEventListener) {
+
     }
 
     @Override
     public boolean supportsEvents() {
+
         return true;
     }
 }

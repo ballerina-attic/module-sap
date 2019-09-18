@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.consumer;
+package org.wso2.ei.module.sap.consumer;
 
 import com.sap.conn.idoc.IDocDocumentList;
 import com.sap.conn.idoc.IDocXMLProcessor;
@@ -25,14 +25,13 @@ import com.sap.conn.idoc.jco.JCoIDocHandler;
 import com.sap.conn.idoc.jco.JCoIDocHandlerFactory;
 import com.sap.conn.idoc.jco.JCoIDocServerContext;
 import com.sap.conn.jco.server.JCoServerContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.Resource;
-import org.ballerinalang.model.util.XMLUtils;
-import org.ballerinalang.model.values.BXML;
-import org.ballerinalang.sap.utils.ResponseCallback;
-import org.ballerinalang.sap.utils.SapUtils;
+import org.ballerinalang.jvm.XMLFactory;
+import org.ballerinalang.jvm.types.AttachedFunction;
+import org.ballerinalang.jvm.values.XMLValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.ResponseCallback;
+import org.wso2.ei.module.sap.utils.SapUtils;
 
 import java.io.StringReader;
 import java.util.Map;
@@ -46,32 +45,36 @@ import java.util.Map;
  */
 public class IDocHandlerFactory implements JCoIDocHandlerFactory {
 
-    private static Log log = LogFactory.getLog(IDocHandlerFactory.class);
-    private Map<String, Resource> sapResource;
-    Context context;
+    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private Map<String, AttachedFunction> sapResource;
+//    Context context;
 
-    IDocHandlerFactory(Map<String, Resource> sapService, Context context) {
+    IDocHandlerFactory(Map<String, AttachedFunction> sapService) {
+
         this.sapResource = sapService;
-        this.context = context;
+//        this.context = context;
         log.info("......IDocHandlerFactory is created.");
     }
 
     public JCoIDocHandler getIDocHandler(JCoIDocServerContext serverCtx) {
+
         return new JCoIDocHandlerImplementation(sapResource);
     }
 
     class JCoIDocHandlerImplementation implements JCoIDocHandler {
 
         private ResponseCallback callback;
-        private Map<String, Resource> sapService;
+        private Map<String, AttachedFunction> sapService;
 
-        JCoIDocHandlerImplementation(Map<String, Resource> sapService) {
+        JCoIDocHandlerImplementation(Map<String, AttachedFunction> sapService) {
+
             log.info("IDocDocumentList type: JCoIDocHandlerImplementation ");
             this.sapService = sapService;
             callback = new ResponseCallback();
         }
 
         public void handleRequest(JCoServerContext serverCtx, IDocDocumentList idocList) {
+
             if (log.isDebugEnabled()) {
                 log.debug("New IDoc received");
             }
@@ -79,8 +82,8 @@ public class IDocHandlerFactory implements JCoIDocHandlerFactory {
             IDocXMLProcessor xmlProcessor = JCoIDoc.getIDocFactory().getIDocXMLProcessor();
             String xmlString = xmlProcessor.render(idocList);
             StringReader reader = new StringReader(xmlString);
-            BXML xml = XMLUtils.parse(reader);
-            SapUtils.invokeOnIdocMessage(xml, sapService, callback, context);
+            XMLValue xml = XMLFactory.parse(reader);
+            SapUtils.invokeOnIdocMessage(xml, sapService, callback);
         }
     }
 }

@@ -16,87 +16,95 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.producer;
+package org.wso2.ei.module.sap.producer;
 
 import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoException;
 import com.sap.conn.jco.JCoFunction;
 import com.sap.conn.jco.JCoStructure;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.sap.utils.SapConstants;
-
-import static org.ballerinalang.sap.utils.SapUtils.createError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.BallerinaSapException;
+import org.wso2.ei.module.sap.utils.SapConstants;
 
 /**
  * <code> TransactionHandler </code> provides the Transport-Sender implementation for SAP endpoints.
  */
 public class TransactionHandler {
 
-    private static Log log = LogFactory.getLog(TransactionHandler.class);
+    private static Logger log = LoggerFactory.getLogger("ballerina");
 
     /**
      * Returns the BAPI/RFC function from the SAP repository.
+     *
      * @param destination SAP JCO destination
-     * @param rfcName the name of the RFC
+     * @param rfcName     the name of the RFC
      * @return The BAPI/RFC function
      */
-    public static JCoFunction getRFCfunction(JCoDestination destination, String rfcName, Context context) {
+    public static JCoFunction getRFCfunction(JCoDestination destination, String rfcName) throws BallerinaSapException {
+
         JCoFunction function = null;
         try {
             function = destination.getRepository().getFunction(rfcName);
         } catch (JCoException e) {
-            context.setReturnValues(createError(context, "Unable to connect with the SAP system. RFC "
-                    + "function:" + function + e.toString()));
+            log.info("Unable to connect with the SAP system.");
+            throw new BallerinaSapException("Unable to connect with the SAP system. RFC "
+                    + "function: " + e);
         }
         return function;
     }
 
     /**
      * Evaluate the BAPI/RFC function in a remote R/* system.
-     * @param function The BAPI/RFC function
+     *
+     * @param function    The BAPI/RFC function
      * @param destination The JCo destination
      * @return the result of the function execution
      */
-    public static String evaluateRFCfunction(JCoFunction function, JCoDestination destination, Context context) {
+    public static String evaluateRFCfunction(JCoFunction function, JCoDestination destination)
+            throws BallerinaSapException {
+
         try {
             function.execute(destination);
         } catch (JCoException e) {
-            context.setReturnValues(createError(context, "Cloud not execute the RFC function: " + function
-                    + e.toString()));
-            createError(context, "Cloud not execute the RFC function: " + function + e.toString());
+            throw new BallerinaSapException("Cloud not execute the RFC function: " + function, e);
         }
         JCoStructure returnStructure = function.getExportParameterList().getStructure(SapConstants.RETURN);
         if (!(returnStructure.getString(SapConstants.TYPE).equals("") ||
                 returnStructure.getString(SapConstants.TYPE).equals(SapConstants.S) ||
                 returnStructure.getString(SapConstants.TYPE).equals(SapConstants.W))) {
-            context.setReturnValues(createError(context, returnStructure.getString(SapConstants.MESSAGE)));
+            throw new BallerinaSapException(returnStructure.getString(SapConstants.MESSAGE));
         }
         return function.toString();
     }
 
     /**
      * Log in to one of the SAP CCMS system-administration interfaces to retrieve the SAP function module.
-     * @param destination The JCo destination
-     * @param productManufacturer The manufacturer of the product to whose CCMS system-
-     *  - administration interface that is being logged in
-     * @param productName The name of the product to whose CCMS system-administration interface that is being logged in
-     * @param ccmsInterface The identification code of the interface
+     *
+     * @param destination           The JCo destination
+     * @param productManufacturer   The manufacturer of the product to whose CCMS system-
+     *                              - administration interface that is being logged in
+     * @param productName           The name of the product to whose CCMS system-administration interface that is being logged in
+     * @param ccmsInterface         The identification code of the interface
      * @param cccmsInterfaceVersion The version of the CCMS system-administration interface that expects
      *                              the external product from the R/3 System
-     * @param context The context
      */
     public static void logon(JCoDestination destination, String productManufacturer, String productName,
-                             String ccmsInterface, String cccmsInterfaceVersion, Context context) {
-        JCoFunction logonFunction = getRFCfunction(destination, SapConstants.BAPI_XMI_LOGON, context);
-        logonFunction.getImportParameterList().setValue(SapConstants.EXTCOMPANY, productManufacturer);
-        logonFunction.getImportParameterList().setValue(SapConstants.EXTPRODUCT, productName);
-        logonFunction.getImportParameterList().setValue(SapConstants.INTERFACE, ccmsInterface);
-        logonFunction.getImportParameterList().setValue(SapConstants.XMIVERSION, cccmsInterfaceVersion);
-        String logonResponse = evaluateRFCfunction(logonFunction, destination, context);
-        if (log.isDebugEnabled()) {
-            log.debug("BAPI XMI Logon response: " + logonResponse);
+                             String ccmsInterface, String cccmsInterfaceVersion) throws BallerinaSapException {
+
+        try {
+            JCoFunction logonFunction = getRFCfunction(destination, SapConstants.BAPI_XMI_LOGON);
+            logonFunction.getImportParameterList().setValue(SapConstants.EXTCOMPANY, productManufacturer);
+            logonFunction.getImportParameterList().setValue(SapConstants.EXTPRODUCT, productName);
+            logonFunction.getImportParameterList().setValue(SapConstants.INTERFACE, ccmsInterface);
+            logonFunction.getImportParameterList().setValue(SapConstants.XMIVERSION, cccmsInterfaceVersion);
+            String logonResponse = evaluateRFCfunction(logonFunction, destination);
+            if (log.isDebugEnabled()) {
+                log.debug("BAPI XMI Logon response: " + logonResponse);
+            }
+        } catch (BallerinaSapException e) {
+            throw new BallerinaSapException("Error occured while doing the logon function: " + e);
         }
+
     }
 }

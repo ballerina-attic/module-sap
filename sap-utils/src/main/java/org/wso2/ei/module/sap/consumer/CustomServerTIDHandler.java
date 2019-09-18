@@ -16,23 +16,23 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.consumer;
+package org.wso2.ei.module.sap.consumer;
 
 import com.sap.conn.jco.server.JCoServerContext;
 import com.sap.conn.jco.server.JCoServerTIDHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Hashtable;
 import java.util.Map;
 
 /**
  * <code>CustomServerTIDHandler </code> provides a default implementation of the transaction ID handling
- *  mechanism of SAP.
+ * mechanism of SAP.
  */
 public class CustomServerTIDHandler implements JCoServerTIDHandler {
 
-    private static Log log = LogFactory.getLog(CustomServerTIDHandler.class);
+    private static Logger log = LoggerFactory.getLogger("ballerina");
 
     private enum TIDState {
         CREATED, EXECUTED, COMMITTED, ROLLED_BACK;
@@ -59,6 +59,7 @@ public class CustomServerTIDHandler implements JCoServerTIDHandler {
 
     @Override
     public void commit(JCoServerContext serverCtx, String tid) {
+
         log.info("TID Handler: commit for " + tid);
         // React on commit. E.g., commit to the database.
         // If the commit failed, throw a RuntimeException.
@@ -67,6 +68,7 @@ public class CustomServerTIDHandler implements JCoServerTIDHandler {
 
     @Override
     public void confirmTID(JCoServerContext arg0, String tid) {
+
         log.info("TID Handler: confirmTID for " + tid);
         try {
             // Clean the resources up.
@@ -77,20 +79,24 @@ public class CustomServerTIDHandler implements JCoServerTIDHandler {
 
     /**
      * React rollback on the database.
+     *
      * @param serverCtx Jco server context
-     * @param tid The transaction ID
+     * @param tid       The transaction ID
      */
     @Override
     public void rollback(JCoServerContext serverCtx, String tid) {
+
         log.info("TID Handler: rollback for " + tid);
         availableTIDs.put(tid, TIDState.ROLLED_BACK);
     }
 
     /**
      * Set the TID status to executed
+     *
      * @param serverCtx Jco server context
      */
     public void execute(JCoServerContext serverCtx) {
+
         String tid = serverCtx.getTID();
         if (tid != null) {
             log.info("TID Handler: execute for " + tid);

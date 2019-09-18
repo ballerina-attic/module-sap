@@ -14,42 +14,100 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/io;
+import ballerina/ 'lang\.object as lang;
+import ballerinax/java;
+
 # Represents a SAP service Listener.
+#
+# + serverConfig - SAP endpoint parameters when the external SAP endpoint is configured as a server.
+# + destinationConfig - SAP endpoint parameters when the external SAP endpoint is configured as a client.
 public type Listener object {
-    *AbstractListener;
+    *lang:Listener;
 
     public ConsumerServerConfig serverConfig = {};
     public ConsumerDestinationConfig destinationConfig = {};
+    handle sapConsumer = java:createNull();
 
     public function __init(ConsumerServerConfig servConfig, ConsumerDestinationConfig destConfig) {
         self.serverConfig = servConfig;
         self.destinationConfig = destConfig;
-        var initResult = self.init(servConfig, destConfig);
-        if (initResult is error) {
-            panic initResult;
+        handle | error initResult = initListener(self);
+        if (initResult is handle) {
+            self.sapConsumer = initResult;
+        } else {
+            io:println("Error occured while initializing the listener!" + initResult.toString());
         }
     }
 
     public function __start() returns error? {
-        return self.start();
+        handle | error startResult = startListener(self.sapConsumer);
+        if (startResult is handle) {
+            self.sapConsumer = startResult;
+        } else {
+            io:println("Error occured while starting the listener!" + startResult.toString());
+            return startResult;
+        }
     }
 
     public function __stop() returns error? {
-        return self.stop();
+        handle | error stopResult = stopListener(self.sapConsumer);
+        if (stopResult is handle) {
+            self.sapConsumer = stopResult;
+        } else {
+            io:println("Error occured while stopping the listener!" + stopResult.toString());
+            return stopResult;
+        }
     }
 
     public function __attach(service s, string? name = ()) returns error? {
-        return self.register(s, name);
+        handle | error attachResult = attachListener(s, name);
+        if (attachResult is handle) {
+            self.sapConsumer = attachResult;
+        } else {
+            io:println("Error occured while registering the listener!" + attachResult.toString());
+            return attachResult;
+        }
     }
 
-    function register(service serviceType, string? name) returns error? = external;
+    public function __gracefulStop() returns error? {
+        handle | error stopResult = stopListener(self.sapConsumer);
+        if (stopResult is handle) {
+            self.sapConsumer = stopResult;
+        } else {
+            io:println("Error occured while stopping the listener!" + stopResult.toString());
+            return stopResult;
+        }
+    }
 
-    function start() returns error? = external;
+    public function __immediateStop() returns error? {
 
-    function stop() returns error? = external;
+    }
 
-    function init(ConsumerServerConfig servConfig, ConsumerDestinationConfig destConfig) returns error? = external;
+    public function __detach(service s) returns error? {
+
+    }
 };
+
+function initListener(Listener consumer) returns handle | error = @java:Method {
+    name: "consumerInit",
+    class: "org.wso2.ei.module.sap.consumer.Init"
+} external;
+
+function startListener(handle consumer) returns handle | error = @java:Method {
+    name: "start",
+    class: "org.wso2.ei.module.sap.consumer.Start"
+} external;
+
+function stopListener(handle consumer) returns handle | error = @java:Method {
+    name: "stop",
+    class: "org.wso2.ei.module.sap.consumer.Stop"
+} external;
+
+function attachListener(service s, any name) returns handle | error = @java:Method {
+    name: "register",
+    class: "org.wso2.ei.module.sap.consumer.Register"
+} external;
 
 # The server properties configuration of SAP.
 #
@@ -83,7 +141,7 @@ public type ConsumerServerConfig record {
 
 #The destination properties configuration of SAP.
 #
-# + ^"client" - SAP Client
+# + sapclient - SAP Client
 # + username - Username to log in to SAP
 # + password - Password to log in to SAP
 # + language - Language preferred by the user who is logged in
@@ -116,7 +174,7 @@ public type ConsumerServerConfig record {
 # + hosttype - Type of the remote host (3=R/3, E=External)
 # + dest - The R/2 destination
 public type ConsumerDestinationConfig record {|
-    string ^"client" = "";
+    string sapclient = "";
     string username = "";
     string password = "";
     string language = "";

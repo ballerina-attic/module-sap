@@ -16,58 +16,48 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.consumer;
+package org.wso2.ei.module.sap.consumer;
 
 import com.sap.conn.idoc.jco.JCoIDocServer;
 import com.sap.conn.jco.server.JCoServer;
 import com.sap.conn.jco.server.JCoServerState;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
-import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
-import org.ballerinalang.connector.api.Struct;
-import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.sap.utils.SapConstants;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_SERVER_CONNECTOR_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_SERVER_STRUCT_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_TRANSPORT_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.SAP_BAPI_PROTOCOL_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.SAP_IDOC_PROTOCOL_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.serverStopTimeout;
+import org.ballerinalang.jvm.values.HandleValue;
+import org.ballerinalang.jvm.values.MapValue;
+import org.ballerinalang.jvm.values.ObjectValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.BallerinaSapException;
 
+import static org.wso2.ei.module.sap.utils.SapConstants.CONSUMER_SERVER_CONNECTOR_NAME;
+import static org.wso2.ei.module.sap.utils.SapConstants.CONSUMER_SERVER_STRUCT_NAME;
+import static org.wso2.ei.module.sap.utils.SapConstants.CONSUMER_TRANSPORT_NAME;
+import static org.wso2.ei.module.sap.utils.SapConstants.SAP_BAPI_PROTOCOL_NAME;
+import static org.wso2.ei.module.sap.utils.SapConstants.SAP_IDOC_PROTOCOL_NAME;
+import static org.wso2.ei.module.sap.utils.SapConstants.serverStopTimeout;
 
 /**
- * Stop the server connector.
+ * Stop the connector service.
  */
-@BallerinaFunction(
-    orgName = SapConstants.ORG_NAME,
-    packageName = SapConstants.FULL_PACKAGE_NAME,
-    functionName = "stop",
-    receiver = @Receiver(
-            type = TypeKind.OBJECT,
-            structType = SapConstants.CONSUMER_STRUCT_NAME,
-            structPackage = SapConstants.SAP_NATIVE_PACKAGE
-    ),
-    isPublic = true
-)
-public class Stop extends BlockingNativeCallableUnit {
+public class Stop {
 
-    private static final Log log = LogFactory.getLog(Stop.class);
+    private static Logger log = LoggerFactory.getLogger("ballerina");
 
-    @Override
-    public void execute(Context context) {
-        Struct consumerStruct = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
+    /**
+     * Stop a running JCo or IDoc Service.
+     *
+     * @param consumer Consumer object through which the connection is created.
+     * @throws BallerinaSapException Throws a BallerinaSapException.
+     */
+    public static HandleValue stop(ObjectValue consumer) throws BallerinaSapException {
+
+        MapValue consumerStruct = (MapValue) consumer;
         String transportName = (String) consumerStruct.getNativeData(CONSUMER_TRANSPORT_NAME);
         String serverName = (String) consumerStruct.getNativeData(CONSUMER_SERVER_STRUCT_NAME);
         if (transportName.equalsIgnoreCase(SAP_IDOC_PROTOCOL_NAME)) {
-            //Get the running IDoc server
+            //Get the running IDoc service
             JCoIDocServer jcoIDocServer = (JCoIDocServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
             if (log.isDebugEnabled()) {
                 log.debug("Stopping the JCo endpoint : " + serverName);
@@ -80,7 +70,7 @@ public class Stop extends BlockingNativeCallableUnit {
                 log.info("JCo server : " + serverName + " stopped");
             }
         } else if (transportName.equalsIgnoreCase(SAP_BAPI_PROTOCOL_NAME)) {
-            //Get the running JCo server
+            //Get the running JCo service
             JCoServer jcoServer = (JCoServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
             if (log.isDebugEnabled()) {
                 log.debug("Stopping the JCo endpoint : " + serverName);
@@ -93,23 +83,24 @@ public class Stop extends BlockingNativeCallableUnit {
                 log.info("JCo server : " + serverName + " stopped");
             }
         } else {
-            throw new BallerinaException("Protocol name: " + transportName + " is not supported.");
+            throw new BallerinaSapException("Protocol name: " + transportName + " is not supported.");
         }
-        context.setReturnValues();
+        return new HandleValue("consumer");
     }
 
     /**
      * Block until the server state is stopped or until the maximum timeout time is reached.
      *
-     * @param jcoServer The jcoServer The JCO server, which will wait to be stopped
-     * @return true if the server is stopped before the timeout time is exceeded.
+     * @param jcoServer The jcoServer The JCO server, which will wait to be stopped.
+     * @return True if the server is stopped before the timeout time is exceeded.
      */
-    private boolean waitForServerStop(JCoServer jcoServer) {
+    private static boolean waitForServerStop(JCoServer jcoServer) {
+
         long timeStamp = System.currentTimeMillis();
         while (jcoServer.getState() != JCoServerState.STOPPED
                 && timeStamp + serverStopTimeout > System.currentTimeMillis()) {
             if (log.isDebugEnabled()) {
-                log.debug("Waiting for server to stop...");
+                log.debug("Waiting for the server to stop...");
             }
             try {
                 TimeUnit.SECONDS.sleep(1);

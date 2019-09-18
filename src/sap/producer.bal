@@ -14,63 +14,73 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerinax/java;
+
 # Represent a SAP producer endpoint.
 #
-# + producerHolder - List of available producers.
 # + producerConfig - Used to store configurations related to a SAP connection.
+# + producerHolder - List of available producers.
 public type Producer client object {
 
-    ProducerConfig producerConfig;
+    public ProducerConfig producerConfig = {};
+    public map<any> producerHolder = {};
+    handle sapProducer = java:createNull();
 
     public function __init(ProducerConfig config) {
         self.producerConfig = config;
-        var initResult = self.init(config);
-        if (initResult is error) {
-            panic initResult;
+        self.initProducer();
+    }
+
+    function initProducer() {
+        //map<anydata>|error config = map<anydata>.constructFrom(self.producerConfig);
+        handle | error value = init(self);
+        if (value is handle) {
+            self.sapProducer = value;
         }
     }
 
-    # Initialize the producer endpoint.
+    # Pushes data into the SAP instance by sending BAPI over RFC.
     #
-    # + config - Configurations related to the endpoint.
-    # + return - Return an error if initialization failed.
-    function init(ProducerConfig config) returns error? = external;
-
-    public map<any> producerHolder = {};
-
-    # Pushes data into the SAP instance by sending IDocs over RFC.
-    #
-    # + idocVersion - The version of the IDoc
-    # + content - The message that used for transmission
-    # + return - Returns an error if sending the IDoc fails.
-    public remote function sendIdocMessage(int idocVersion, xml content) returns string|error = external;
+    # + content - The message that is used for transmission
+    # + doTransaction - Whether the BAPI_TRANSACTION_COMMIT is called after the LUW is completed successfully
+    # + return - Returns the response or error.
+    public remote function sendBapi(xml content, boolean doTransaction) returns handle | error {
+        handle sapProducer = self.sapProducer;
+        handle | error value = sendBapiMessage(sapProducer, content, doTransaction);
+        return value;
+    }
 
     # Pushes data into the SAP instance by sending IDocs over RFC.
     #
     # + content - The message that is used for transmission
-    # + doTransaction - Whether the BAPI_TRANSACTION_COMMIT is called after the LUW is completed successfully
-    # + doLogon - Whether you log in to one of the SAP CCMS system-administration interfaces to retrieve
-    #   the SAP function module
-    # + productManufacturer - The manufacturer of the product to whose CCMS system administration interface you want to
-    #   log in to a CCMS system administration interface. If you log in to one of the SAP CCMS system-administration
-    #   interfaces, it is mandatory
-    # + productName - The name of the product to whose CCMS system-administration interface you want to log in to
-    #   If you log in to one of the SAP CCMS system-administration interfaces, it is mandatory.
-    # + interface - The identification code of the interface that is to be used (such as XBR (DB backup),
-    #   XBP (Background processing), XMB (Basic functions), XOM (Output management), and XDB (DB administration))
-    #   If you log in to one of the SAP CCMS system-administration interfaces, it is mandatory.
-    # + CCMSInterfaceVersion - The version of the CCMS system-administration interface that expects
-    #   the external product from the R/3 System
-    # + return - Returns an error if sending the BAPI fails.
-    public remote function sendBapiMessage(xml content, boolean doTransaction, boolean doLogon,
-    string? productManufacturer = "", string? productName = "", string? interface = "",
-    string? CCMSInterfaceVersion = "") returns string|error = external;
+    # + idocVersion - IDOC Version.
+    # + return - Returns the response or error.
+    public remote function sendIdoc(xml content, int idocVersion) returns handle | error {
+        handle sapProducer = self.sapProducer;
+        handle | error value = sendIdocMessage(sapProducer, idocVersion, content);
+        return value;
+    }
 };
+
+function init(Producer producer) returns handle | error = @java:Method {
+    name: "producerInit",
+    class: "org.wso2.ei.module.sap.producer.InitClient"
+} external;
+
+
+function sendBapiMessage(handle producer, xml content, boolean doTransaction) returns handle | error = @java:Method {
+    class: "org.wso2.ei.module.sap.producer.SendBAPIMessage"
+} external;
+
+
+function sendIdocMessage(handle producer, int idocVersion, xml content) returns handle | error = @java:Method {
+    class: "org.wso2.ei.module.sap.producer.SendIDocMessage"
+} external;
 
 # The Client endpoint configuration of SAP.
 #
 # + destinationName - Name of the SAP gateway
-# + ^"client" - SAP Client
+# + sapclient - SAP Client
 # + username - Username to log in to SAP
 # + password - Password to log in to SAP
 # + language - Language preferred by the user who is logged in
@@ -104,7 +114,7 @@ public type Producer client object {
 # + dest - The R/2 destination
 public type ProducerConfig record {|
     string destinationName = "";
-    string ^"client" = "";
+    string sapclient = "";
     string username = "";
     string password = "";
     string language = "";

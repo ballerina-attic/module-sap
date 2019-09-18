@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.producer;
+package org.wso2.ei.module.sap.producer;
 
 import com.sap.conn.jco.JCoContext;
 import com.sap.conn.jco.JCoDestination;
@@ -24,113 +24,80 @@ import com.sap.conn.jco.JCoException;
 import com.sap.conn.jco.JCoFunction;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
-import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.sap.utils.SapConstants;
+import org.ballerinalang.jvm.values.MapValue;
+import org.ballerinalang.jvm.values.ObjectValue;
+import org.ballerinalang.jvm.values.XMLValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.BallerinaSapException;
+import org.wso2.ei.module.sap.utils.SapConstants;
 
 import javax.xml.stream.XMLStreamException;
 
-import static org.ballerinalang.sap.nativeimpl.producer.RFCMetaDataParser.processMetaDataDocument;
-import static org.ballerinalang.sap.utils.SapConstants.FULL_PACKAGE_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.NATIVE_PRODUCER;
-import static org.ballerinalang.sap.utils.SapConstants.ORG_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.PRODUCER_STRUCT_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.SAP_NATIVE_PACKAGE;
-import static org.ballerinalang.sap.utils.SapUtils.createError;
+import static org.wso2.ei.module.sap.producer.RFCMetaDataParser.processMetaDataDocument;
+import static org.wso2.ei.module.sap.utils.SapConstants.NATIVE_PRODUCER;
 
-/**
- * {@code Send} Send the BAPI message to the  SAP instance.
- */
-@BallerinaFunction(
-    orgName = ORG_NAME,
-    packageName = FULL_PACKAGE_NAME,
-    functionName = "sendBapiMessage",
-    receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
-            structPackage = SAP_NATIVE_PACKAGE)
-)
-public class SendBAPIMessage extends BlockingNativeCallableUnit {
+public class SendBAPIMessage {
 
-    private static Log log = LogFactory.getLog(SendBAPIMessage.class);
+    private static Logger log = LoggerFactory.getLogger("SendBAPIMessage");
 
-    @Override
-    public void execute(Context context) {
-        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
-        BMap producerMap = (BMap) producerConnector.get("producerHolder");
-        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
-        String content = String.valueOf(context.getRefArgument(1));
-        boolean doLogon = context.getBooleanArgument(0);
-        boolean doTransaction = context.getBooleanArgument(1);
-        String productManufacturer = String.valueOf(context.getRefArgument(2));
-        String productName = String.valueOf(context.getRefArgument(3));
-        String ccmsInterface = String.valueOf(context.getRefArgument(4));
-        String cccmsInterfaceVersion = String.valueOf(context.getRefArgument(4));
+    public static String sendBapiMessage(ObjectValue producer, XMLValue content1, Boolean transaction)
+            throws BallerinaSapException {
+
+        log.info("Sending the BAPI request.");
+        MapValue producerStruct = (MapValue) producer.getNativeData(NATIVE_PRODUCER);
+        String content = String.valueOf(content1);
+        boolean doTransaction = transaction;
         String functionName = null;
         JCoDestination destination = (JCoDestination) producerStruct.getNativeData(NATIVE_PRODUCER);
         String response;
         try {
             OMElement omData = AXIOMUtil.stringToOM(content);
             functionName = omData.getQName().toString();
-            if (doLogon) {
-                if ((String.valueOf(productManufacturer) == null && String.valueOf(productManufacturer).equals("")) ||
-                        (String.valueOf(productName) == null && String.valueOf(productName).equals("")) ||
-                        (String.valueOf(ccmsInterface) == null && String.valueOf(ccmsInterface).equals(""))) {
-                    log.error("The logon's parameter/s has/have null value.");
-                }
-                TransactionHandler.logon(destination, productManufacturer, productName, ccmsInterface,
-                        cccmsInterfaceVersion, context);
-            }
             if (doTransaction) {
                 log.info("Begin transaction.");
                 JCoContext.begin(destination);
                 // Get the BAPI/RFC function from the SAP repository
-                JCoFunction function = TransactionHandler.getRFCfunction(destination, functionName, context);
+                JCoFunction function = TransactionHandler.getRFCfunction(destination, functionName);
                 // Process the BAPI function
                 processMetaDataDocument(omData, function);
                 // Evaluate the BAPI/RFC function in a remote R/* system
-                response = TransactionHandler.evaluateRFCfunction(function, destination, context);
+                response = TransactionHandler.evaluateRFCfunction(function, destination);
                 JCoFunction commitFunction = TransactionHandler.getRFCfunction(destination,
-                        SapConstants.BAPI_COMMIT_NAME, context);
-                TransactionHandler.evaluateRFCfunction(commitFunction, destination, context);
-                context.setReturnValues(new BString(response));
-                log.info("Commit transaction for function:" + functionName);
+                        SapConstants.BAPI_COMMIT_NAME);
+                TransactionHandler.evaluateRFCfunction(commitFunction, destination);
+                log.info("Committed the transaction for function: " + functionName);
+                return response;
             } else {
                 // Get the BAPI/RFC function from the SAP repository
-                JCoFunction function = TransactionHandler.getRFCfunction(destination, functionName, context);
+                JCoFunction function = TransactionHandler.getRFCfunction(destination, functionName);
                 // Process the BAPI function
-                RFCMetaDataParser.processMetaDataDocument(omData, function);
+                processMetaDataDocument(omData, function);
                 // Evaluate the BAPI/RFC function in a remote R/* system
-                response = TransactionHandler.evaluateRFCfunction(function, destination, context);
-                context.setReturnValues(new BString(response));
+                response = TransactionHandler.evaluateRFCfunction(function, destination);
+                log.info("BAPI request sent.");
+                return response;
             }
         } catch (XMLStreamException e) {
-            context.setReturnValues(createError(context, "Error occurred when converting the XML data" +
-                    " in as string to XML: " + e.toString()));
-            createError(context, "Error occurred when converting the XML data" +
-                    " in as string to XML: " + e.toString());
+            throw new BallerinaSapException("Error occurred when converting the XML data" +
+                    " in as string to XML: ", e);
         } catch (Exception e) {
             if (doTransaction) {
                 JCoFunction rollbackFunction = TransactionHandler.getRFCfunction(destination,
-                        SapConstants.ROLLBACK_BAPI_NAME, context);
-                TransactionHandler.evaluateRFCfunction(rollbackFunction, destination, context);
-                log.info("Rollback transaction for function:" + functionName);
+                        SapConstants.ROLLBACK_BAPI_NAME);
+                response = TransactionHandler.evaluateRFCfunction(rollbackFunction, destination);
+                log.info("Rollback transaction for function: " + functionName);
+                return response;
+            } else {
+                return "Error occurred when sending the BAPI request: " + e;
             }
         } finally {
-            if (doTransaction || doLogon) {
+            if (doTransaction) {
                 try {
                     JCoContext.end(destination);
                 } catch (JCoException e) {
-                    context.setReturnValues(createError(context, "Error occurred when end the " +
-                            "Jco context."));
-                    createError(context, "Error occurred when end the " +
-                            "Jco context.");
+                    throw new BallerinaSapException("Error occurred when end the " +
+                            "Jco context.", e);
                 }
                 log.info("End the transaction for function: " + functionName);
             }

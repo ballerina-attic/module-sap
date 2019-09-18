@@ -16,83 +16,79 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.consumer;
+package org.wso2.ei.module.sap.consumer;
 
 import com.sap.conn.idoc.jco.JCoIDocServer;
 import com.sap.conn.jco.server.DefaultServerHandlerFactory.FunctionHandlerFactory;
 import com.sap.conn.jco.server.JCoServer;
 import com.sap.conn.jco.server.JCoServerFunctionHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
-import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
-import org.ballerinalang.connector.api.Resource;
-import org.ballerinalang.connector.api.Struct;
-import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.sap.utils.SapConstants;
+import org.ballerinalang.jvm.types.AttachedFunction;
+import org.ballerinalang.jvm.values.HandleValue;
+import org.ballerinalang.jvm.values.MapValue;
+import org.ballerinalang.jvm.values.ObjectValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.BallerinaSapException;
+import org.wso2.ei.module.sap.utils.SapConstants;
 
 import java.io.PrintStream;
 import java.util.Map;
 
-import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_SERVER_CONNECTOR_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.CONSUMER_TRANSPORT_NAME;
-import static org.ballerinalang.sap.utils.SapConstants.SAP_RESOURCE;
+import static org.wso2.ei.module.sap.utils.SapConstants.CONSUMER_SERVER_CONNECTOR_NAME;
+import static org.wso2.ei.module.sap.utils.SapConstants.CONSUMER_TRANSPORT_NAME;
+import static org.wso2.ei.module.sap.utils.SapConstants.SAP_RESOURCE;
 
-/**
- * Star the server connector.
- */
-@BallerinaFunction(
-    orgName = SapConstants.ORG_NAME,
-    packageName = SapConstants.FULL_PACKAGE_NAME,
-    functionName = "start",
-    receiver = @Receiver(
-            type = TypeKind.OBJECT,
-            structType = SapConstants.CONSUMER_STRUCT_NAME,
-            structPackage = SapConstants.SAP_NATIVE_PACKAGE
-    ),
-    isPublic = true
-)
-public class Start extends BlockingNativeCallableUnit {
+public class Start {
 
-    private static Log log = LogFactory.getLog(Start.class);
+    private static Logger log = LoggerFactory.getLogger("ballerina");
     private static final PrintStream console = System.out;
 
-    @Override
-    public void execute(Context context) {
-        Struct consumerStruct = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
-        Map<String, Resource> sapService = (Map<String, Resource>) consumerStruct.getNativeData(SAP_RESOURCE);
+    public static HandleValue start(ObjectValue consumerStruct) throws BallerinaSapException {
+
+//        MapValue consumerStruct = (MapValue) consumer;
+        Map<String, AttachedFunction> sapService = (Map<String, AttachedFunction>)
+                consumerStruct.getNativeData(SAP_RESOURCE);
         String transportName = (String) consumerStruct.getNativeData(CONSUMER_TRANSPORT_NAME);
         StateChangedListener stateListener = new StateChangedListener();
-        ThrowableListener listener = new ThrowableListener(context, sapService);
+        ThrowableListener listener = new ThrowableListener(sapService);
         if (transportName.equalsIgnoreCase(SapConstants.SAP_BAPI_PROTOCOL_NAME)) {
-            FunctionHandlerFactory factory = new FunctionHandlerFactory();
-            JCoServerFunctionHandler rfcConnectionHandler = new RFCConnectionHandler(sapService, context);
-            factory.registerGenericHandler(rfcConnectionHandler);
-            JCoServer jcoServer = (JCoServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
-            //Configure the Jco Server
-            jcoServer.setCallHandlerFactory(factory);
-            jcoServer.setTIDHandler(new CustomServerTIDHandler());
-            jcoServer.addServerErrorListener(listener);
-            jcoServer.addServerExceptionListener(listener);
-            jcoServer.addServerStateChangedListener(stateListener);
-            // Start the JCo server
-            jcoServer.start();
-            console.println("JCo Server started");
+            try {
+                FunctionHandlerFactory factory = new FunctionHandlerFactory();
+                JCoServerFunctionHandler rfcConnectionHandler = new BapiHandlerFactory(sapService);
+                factory.registerGenericHandler(rfcConnectionHandler);
+                JCoServer jcoServer = (JCoServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
+                //Configure the Jco Server
+                jcoServer.setCallHandlerFactory(factory);
+                jcoServer.setTIDHandler(new CustomServerTIDHandler());
+                jcoServer.addServerErrorListener(listener);
+                jcoServer.addServerExceptionListener(listener);
+                jcoServer.addServerStateChangedListener(stateListener);
+                // Start the JCo server
+                jcoServer.start();
+                console.println("JCo Server started");
+            } catch (Exception e) {
+                throw new BallerinaSapException("Error while starting the JCo Server: ", e);
+            }
+
         } else {
-            JCoIDocServer jcoIDocServer = (JCoIDocServer) consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
-            IDocHandlerFactory iDocHandlerFactory = new IDocHandlerFactory(sapService, context);
-            //Configure the IDoc Server
-            jcoIDocServer.setIDocHandlerFactory(iDocHandlerFactory);
-            jcoIDocServer.setTIDHandler(new CustomServerTIDHandler());
-            jcoIDocServer.addServerErrorListener(listener);
-            jcoIDocServer.addServerExceptionListener(listener);
-            jcoIDocServer.addServerStateChangedListener(stateListener);
-            // Start the IDoc server
-            jcoIDocServer.start();
-            console.println("IDoc Server started");
+            try {
+                JCoIDocServer jcoIDocServer = (JCoIDocServer)
+                        consumerStruct.getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
+                IDocHandlerFactory iDocHandlerFactory = new IDocHandlerFactory(sapService);
+                //Configure the IDoc Server
+                jcoIDocServer.setIDocHandlerFactory(iDocHandlerFactory);
+                jcoIDocServer.setTIDHandler(new CustomServerTIDHandler());
+                jcoIDocServer.addServerErrorListener(listener);
+                jcoIDocServer.addServerExceptionListener(listener);
+                jcoIDocServer.addServerStateChangedListener(stateListener);
+                // Start the IDoc server
+                jcoIDocServer.start();
+                console.println("IDoc Server started");
+            } catch (Exception e) {
+                throw new BallerinaSapException("Error while starting the IDoc Server: ", e);
+            }
+
         }
+        return new HandleValue("consumer");
     }
 }

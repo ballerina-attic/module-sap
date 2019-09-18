@@ -16,31 +16,28 @@
  * under the License.
  */
 
-package org.ballerinalang.sap.nativeimpl.consumer;
+package org.wso2.ei.module.sap.consumer;
 
 import com.sap.conn.jco.server.JCoServer;
 import com.sap.conn.jco.server.JCoServerState;
 import com.sap.conn.jco.server.JCoServerStateChangedListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.PrintStream;
-
-import static org.ballerinalang.sap.utils.SapConstants.SAP_SERVER_STATE;
+import static org.wso2.ei.module.sap.utils.SapConstants.SAP_SERVER_STATE;
 
 /**
- * The state change listener provides details for connections managed by a server instance
+ * The state change listener provides details for connections managed by a server instance which
  * are available via JCoServerMonitor
  */
 public class StateChangedListener implements JCoServerStateChangedListener {
 
-    private static Log log = LogFactory.getLog(Start.class);
-    private static final PrintStream console = System.out;
+    private static Logger log = LoggerFactory.getLogger("ballerina");
 
     @Override
     public void serverStateChangeOccurred(JCoServer jCoServer, JCoServerState oldState, JCoServerState newState) {
 
-        console.println(SAP_SERVER_STATE + "Server state changed from " + oldState.toString() + " to "
+        log.info(SAP_SERVER_STATE + "Server state changed from " + oldState.toString() + " to "
                 + newState.toString() + " on server with program id " + jCoServer.getProgramID());
     }
 }
