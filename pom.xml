@@ -135,12 +135,12 @@
 
     <properties>
         <sap.version>3</sap.version>
-        <ballerina.version>1.0.0-rc1-SNAPSHOT</ballerina.version>
+        <ballerina.version>1.0.1</ballerina.version>
         <org.testng.version>6.11</org.testng.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.api.version>1.7.25</slf4j.api.version>
         <skipTests>true</skipTests>
-        <axiom.version>1.2.11-wso5v12-SNAPSHOT</axiom.version>
+        <axiom.version>1.2.11-wso2v16</axiom.version>
     </properties>
 
 </project>

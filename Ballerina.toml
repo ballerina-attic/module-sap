@@ -11,11 +11,3 @@ target = "java8"
     artifactId = "sap-utils"
     version = "0.9.0"
     groupId = "org.wso2.ei"
-
-    [[platform.libraries]]
-    module = "sapjco"
-    path = "lib/sapjco3.jar"
-
-    [[platform.libraries]]
-    module = "sapidoc"
-    path = "lib/sapidoc3.jar"
