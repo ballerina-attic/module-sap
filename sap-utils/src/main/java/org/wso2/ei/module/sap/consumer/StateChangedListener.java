@@ -23,8 +23,8 @@ import com.sap.conn.jco.server.JCoServerState;
 import com.sap.conn.jco.server.JCoServerStateChangedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.SapConstants;
 
-import static org.wso2.ei.module.sap.utils.SapConstants.SAP_SERVER_STATE;
 
 /**
  * The state change listener provides details for connections managed by a server instance which
@@ -32,12 +32,12 @@ import static org.wso2.ei.module.sap.utils.SapConstants.SAP_SERVER_STATE;
  */
 public class StateChangedListener implements JCoServerStateChangedListener {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     @Override
     public void serverStateChangeOccurred(JCoServer jCoServer, JCoServerState oldState, JCoServerState newState) {
 
-        log.info(SAP_SERVER_STATE + "Server state changed from " + oldState.toString() + " to "
+        log.info(SapConstants.SAP_SERVER_STATE + "Server state changed from " + oldState.toString() + " to "
                 + newState.toString() + " on server with program id " + jCoServer.getProgramID());
     }
 }

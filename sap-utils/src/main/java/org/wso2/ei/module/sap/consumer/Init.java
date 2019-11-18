@@ -24,7 +24,6 @@ import com.sap.conn.jco.JCoException;
 import com.sap.conn.jco.ext.Environment;
 import com.sap.conn.jco.server.JCoServer;
 import com.sap.conn.jco.server.JCoServerFactory;
-import org.ballerinalang.jvm.values.HandleValue;
 import org.ballerinalang.jvm.values.MapValue;
 import org.ballerinalang.jvm.values.ObjectValue;
 import org.slf4j.Logger;
@@ -44,13 +43,12 @@ import static org.wso2.ei.module.sap.utils.SapConstants.SERVER_CONFIG;
 
 public class Init {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     public static ObjectValue consumerInit(ObjectValue consumer) throws BallerinaSapException {
 
         CustomDestinationDataProvider destinationDataProvider;
         CustomServerDataProvider serverDataProvider;
-//        MapValue serviceEndpoint = (MapValue)consumer;
         MapValue serverConfig = consumer.getMapValue(SERVER_CONFIG);
         MapValue destinationConfig = consumer.getMapValue(DESTINATION_CONFIG);
         Properties serverProperties = SapUtils.getServerProperties(serverConfig);

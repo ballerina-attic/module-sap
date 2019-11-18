@@ -24,7 +24,6 @@ import com.sap.conn.jco.server.JCoServer;
 import com.sap.conn.jco.server.JCoServerFunctionHandler;
 import org.ballerinalang.jvm.types.AttachedFunction;
 import org.ballerinalang.jvm.values.HandleValue;
-import org.ballerinalang.jvm.values.MapValue;
 import org.ballerinalang.jvm.values.ObjectValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +39,11 @@ import static org.wso2.ei.module.sap.utils.SapConstants.SAP_RESOURCE;
 
 public class Start {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
     private static final PrintStream console = System.out;
 
     public static HandleValue start(ObjectValue consumerStruct) throws BallerinaSapException {
 
-//        MapValue consumerStruct = (MapValue) consumer;
         Map<String, AttachedFunction> sapService = (Map<String, AttachedFunction>)
                 consumerStruct.getNativeData(SAP_RESOURCE);
         String transportName = (String) consumerStruct.getNativeData(CONSUMER_TRANSPORT_NAME);

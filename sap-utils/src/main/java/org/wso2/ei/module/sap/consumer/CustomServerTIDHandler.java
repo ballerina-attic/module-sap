@@ -22,6 +22,7 @@ import com.sap.conn.jco.server.JCoServerContext;
 import com.sap.conn.jco.server.JCoServerTIDHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.SapConstants;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -32,7 +33,7 @@ import java.util.Map;
  */
 public class CustomServerTIDHandler implements JCoServerTIDHandler {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     private enum TIDState {
         CREATED, EXECUTED, COMMITTED, ROLLED_BACK;

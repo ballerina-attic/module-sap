@@ -39,7 +39,7 @@ import static org.wso2.ei.module.sap.utils.SapConstants.NATIVE_PRODUCER;
 
 public class SendBAPIMessage {
 
-    private static Logger log = LoggerFactory.getLogger("SendBAPIMessage");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     public static String sendBapiMessage(ObjectValue producer, XMLValue content1, Boolean transaction)
             throws BallerinaSapException {
@@ -55,7 +55,6 @@ public class SendBAPIMessage {
             OMElement omData = AXIOMUtil.stringToOM(content);
             functionName = omData.getQName().toString();
             if (doTransaction) {
-                log.info("Begin transaction.");
                 JCoContext.begin(destination);
                 // Get the BAPI/RFC function from the SAP repository
                 JCoFunction function = TransactionHandler.getRFCfunction(destination, functionName);
@@ -75,7 +74,7 @@ public class SendBAPIMessage {
                 processMetaDataDocument(omData, function);
                 // Evaluate the BAPI/RFC function in a remote R/* system
                 response = TransactionHandler.evaluateRFCfunction(function, destination);
-                log.info("BAPI request sent.");
+                log.info("BAPI request is sent.");
                 return response;
             }
         } catch (XMLStreamException e) {

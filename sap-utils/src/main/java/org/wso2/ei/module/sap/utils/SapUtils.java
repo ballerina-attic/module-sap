@@ -25,7 +25,7 @@ import static org.wso2.ei.module.sap.utils.SapConstants.RESOURCE_ON_MESSAGE;
  */
 public class SapUtils {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     /**
      * Creates and returns an ErrorValue object.
@@ -289,7 +289,6 @@ public class SapUtils {
                                            CallableUnitCallback callback) {
 
         try {
-            log.info("invokeOnBapiMessage");
             AttachedFunction onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
             String serviceName = onMessageResource.getName();
             Executor.submit(null, (ObjectValue) onMessageResource, serviceName, callback, null,
@@ -310,7 +309,6 @@ public class SapUtils {
                                            CallableUnitCallback callback) {
 
         try {
-            log.info("invokeOnIdocMessage");
             AttachedFunction onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
             Executor.submit(null, null, onMessageResource.getName(), callback, null,
                     null, xml);

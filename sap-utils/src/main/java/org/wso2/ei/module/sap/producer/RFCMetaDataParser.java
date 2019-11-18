@@ -30,12 +30,6 @@ import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.Iterator;
 
-import static org.wso2.ei.module.sap.utils.SapConstants.FIELD;
-import static org.wso2.ei.module.sap.utils.SapConstants.IMPORT;
-import static org.wso2.ei.module.sap.utils.SapConstants.STRUCTURE;
-import static org.wso2.ei.module.sap.utils.SapConstants.TABLE;
-import static org.wso2.ei.module.sap.utils.SapConstants.TABLES;
-
 /**
  * This contains the required methods that can be used to parse a
  * meta data description of a BAPI/RFC call.
@@ -50,7 +44,7 @@ import static org.wso2.ei.module.sap.utils.SapConstants.TABLES;
  */
 public class RFCMetaDataParser {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     /**
      * Process the document.
@@ -77,9 +71,9 @@ public class RFCMetaDataParser {
 
         String qname = element.getQName().toString();
         if (qname != null) {
-            if (qname.equals(IMPORT)) {
+            if (qname.equals(SapConstants.IMPORT)) {
                 processImport(element, function);
-            } else if (qname.equals(TABLES)) {
+            } else if (qname.equals(SapConstants.TABLES)) {
                 processTables(element, function);
             } else {
                 log.warn("Unknown meta data type tag :" + qname + " detected. " +
@@ -102,10 +96,10 @@ public class RFCMetaDataParser {
             String qname = childElement.getQName().toString();
             String name = childElement.getAttributeValue(SapConstants.NAME_Q);
             switch (qname) {
-                case STRUCTURE:
+                case SapConstants.STRUCTURE:
                     processStructure(childElement, function, name);
                     break;
-                case FIELD:
+                case SapConstants.FIELD:
                     processField(childElement, function, name);
                     break;
                 default:
@@ -134,7 +128,7 @@ public class RFCMetaDataParser {
             while (itr.hasNext()) {
                 OMElement childElement = (OMElement) itr.next();
                 String qname = childElement.getQName().toString();
-                if (qname.equals(FIELD)) {
+                if (qname.equals(SapConstants.FIELD)) {
                     String fieldName = childElement.getAttributeValue(SapConstants.NAME_Q);
                     String fieldValue = childElement.getText();
                     for (JCoField field : jcoStructure) {
@@ -190,7 +184,7 @@ public class RFCMetaDataParser {
             OMElement childElement = (OMElement) itr.next();
             String qname = childElement.getQName().toString();
             String tableName = childElement.getAttributeValue(SapConstants.NAME_Q);
-            if (qname.equals(TABLE)) {
+            if (qname.equals(SapConstants.TABLE)) {
                 processTable(childElement, function, tableName);
             } else {
                 log.warn("Invalid meta data type element found : " + qname + " .This meta data " +
@@ -252,7 +246,7 @@ public class RFCMetaDataParser {
         while (itr.hasNext()) {
             OMElement childElement = (OMElement) itr.next();
             String qname = childElement.getQName().toString();
-            if (qname != null && qname.equals(FIELD)) {
+            if (qname != null && qname.equals(SapConstants.FIELD)) {
                 processField(childElement, table);
             } else {
                 log.warn("Invalid meta data type element found : " + qname + " .This meta data " +

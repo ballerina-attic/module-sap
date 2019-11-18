@@ -32,7 +32,7 @@ import org.wso2.ei.module.sap.utils.SapConstants;
  */
 public class TransactionHandler {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     /**
      * Returns the BAPI/RFC function from the SAP repository.

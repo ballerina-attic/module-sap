@@ -31,6 +31,7 @@ import org.ballerinalang.model.values.BError;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.ei.module.sap.utils.SapConstants;
 import org.wso2.ei.module.sap.utils.SapUtils;
 
 import java.util.Map;
@@ -46,18 +47,16 @@ import static org.wso2.ei.module.sap.utils.SapConstants.RESOURCE_ON_MESSAGE;
  */
 public class BapiHandlerFactory implements JCoServerFunctionHandler {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     private ResponseCallback callback;
     private Map<String, AttachedFunction> sapResource;
     private final BRuntime runtime;
-//    private Context context;
 
     BapiHandlerFactory(Map<String, AttachedFunction> sapService) {
 
         this.sapResource = sapService;
         callback = new ResponseCallback();
-//        this.context = context;
         runtime = BRuntime.getCurrentRuntime();
         log.info("......JCo server function handler is created.");
     }
@@ -76,15 +75,10 @@ public class BapiHandlerFactory implements JCoServerFunctionHandler {
         jCoFunction.getExportParameterList().setValue("ECHOTEXT", jCoFunction.getImportParameterList()
                 .getString("REQUTEXT"));
         String output = jCoFunction.getImportParameterList().getString("REQUTEXT");
-        log.info("handleRequest1");
-//        SapUtils.invokeOnBapiMessage(output, sapResource, callback);
         try {
-            log.info("invokeOnBapiMessage");
             AttachedFunction onMessageResource = sapResource.get(RESOURCE_ON_MESSAGE);
             String serviceName = onMessageResource.getName();
             runtime.invokeMethodAsync((ObjectValue) onMessageResource, serviceName, callback);
-//            Executor.submit(null, (ObjectValue) onMessageResource, serviceName, callback, null,
-//                    null, output, true);
         } catch (BallerinaException e) {
             SapUtils.invokeOnError(sapResource, callback, e.getMessage());
         }

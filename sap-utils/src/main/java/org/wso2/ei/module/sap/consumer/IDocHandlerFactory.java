@@ -31,6 +31,7 @@ import org.ballerinalang.jvm.values.XMLValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.ei.module.sap.utils.ResponseCallback;
+import org.wso2.ei.module.sap.utils.SapConstants;
 import org.wso2.ei.module.sap.utils.SapUtils;
 
 import java.io.StringReader;
@@ -45,15 +46,12 @@ import java.util.Map;
  */
 public class IDocHandlerFactory implements JCoIDocHandlerFactory {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
     private Map<String, AttachedFunction> sapResource;
-//    Context context;
 
     IDocHandlerFactory(Map<String, AttachedFunction> sapService) {
 
         this.sapResource = sapService;
-//        this.context = context;
-        log.info("......IDocHandlerFactory is created.");
     }
 
     public JCoIDocHandler getIDocHandler(JCoIDocServerContext serverCtx) {

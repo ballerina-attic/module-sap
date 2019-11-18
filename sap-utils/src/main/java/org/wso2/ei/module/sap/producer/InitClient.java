@@ -40,7 +40,7 @@ import static org.wso2.ei.module.sap.utils.SapConstants.NATIVE_PRODUCER;
  */
 public class InitClient {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     /**
      * Initialize the producer instance for the connector.

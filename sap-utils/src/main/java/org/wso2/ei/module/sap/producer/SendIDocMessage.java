@@ -38,7 +38,7 @@ import static org.wso2.ei.module.sap.utils.SapConstants.NATIVE_PRODUCER;
 
 public class SendIDocMessage {
 
-    private static Logger log = LoggerFactory.getLogger("ballerina");
+    private static Logger log = LoggerFactory.getLogger(SapConstants.BALLERINA);
 
     public static String sendIdocMessage(ObjectValue producer, int idocVersion1, XMLValue content1)
             throws BallerinaSapException {

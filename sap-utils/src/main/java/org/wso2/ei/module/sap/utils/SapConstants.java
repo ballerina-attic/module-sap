@@ -29,6 +29,7 @@ public class SapConstants {
 
     }
 
+    public static final String BALLERINA = "ballerina";
     public static final String PATH_SEPARATOR = "/";
     public static final String BLOCK_SEPARATOR = ":";
     public static final String SAP_SERVER_STATE = "[ballerina/sap] ";
