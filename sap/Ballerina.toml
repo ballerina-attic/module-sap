@@ -7,7 +7,7 @@ target = "java8"
 
     [[platform.libraries]]
     module = "sap"
-    path = "sap-utils/target/sap-utils-0.9.0.jar"
+    path = "../sap-utils/target/sap-utils-0.9.0.jar"
     artifactId = "sap-utils"
     version = "0.9.0"
     groupId = "org.wso2.ei"
